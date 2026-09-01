@@ -151,62 +151,46 @@
     </div>
 
     <div class="narrow" style="margin-top:clamp(2.2rem,4.5vw,3.6rem)">
-      <h3>The runner it shipped with disagreed with the policy</h3>
-      <p>
-        The vendor ships firmware, two exported policies and one deployment runner that opens the
-        serial port, runs the network at 50 Hz and serves a phone joystick. It runs. What it does not
-        do is hand the policy the observations that policy was trained on — the network carries its
-        normalization in the graph and its constants in its metadata, and the runner contradicted
-        both.
-      </p>
+      <h3>The runner it shipped with does not read the policy it serves</h3>
     </div>
 
     <div class="dtab">
       <table>
-        <caption>Deployment runner · what the policy was actually being fed</caption>
+        <caption>Deployment runner · hard-coded constants against the policy's own exported metadata</caption>
         <thead>
-          <tr><th scope="col">&nbsp;</th><th scope="col">The runner did</th><th scope="col">What it should be</th></tr>
+          <tr><th scope="col">&nbsp;</th><th scope="col">The runner hard-codes</th><th scope="col">The policy's metadata says</th></tr>
         </thead>
         <tbody>
           <tr>
-            <th scope="row">Angular velocity</th>
-            <td data-h="was">Firmware axis order, bias included, scaled by 0.2 — a <b>+54°/s</b>
-              rotation the robot is not doing, arriving every tick.</td>
-            <td data-h="now">Two seconds of bias calibration at startup, axes mapped to the body
-              frame, raw rad/s.</td>
+            <th scope="row">Default stance · calves</th>
+            <td data-h="was"><b>0°</b> on all four calf joints.</td>
+            <td data-h="now"><b>−15.99°</b>. The constant is applied twice per step — in the
+              observation as <i>q − default</i>, and again in the action as
+              <i>default + scale·a</i>.</td>
           </tr>
           <tr>
-            <th scope="row">Gravity, walking</th>
-            <td data-h="was">Hard-coded <b>[0, 0, −1]</b>: upright and level, whatever the machine
-              was doing.</td>
-            <td data-h="now">The measured vector, from the attitude estimator above.</td>
+            <th scope="row">Default stance · arm</th>
+            <td data-h="was"><b>70°</b> on the arm's second segment.</td>
+            <td data-h="now"><b>+89.95°</b>. Five of fifteen joints disagree in total.</td>
           </tr>
           <tr>
-            <th scope="row">Joint velocity</th>
-            <td data-h="was">A firmware field of unverified units, scaled by 0.2 — so the policy saw
-              it <b>five times too small</b>.</td>
-            <td data-h="now">Differenced from read-back angles, clamped at ±20 rad/s — which also
-              bounds what one bad frame can inject.</td>
+            <th scope="row">Joint ordering</th>
+            <td data-h="was">A fixed servo-ID list.</td>
+            <td data-h="now">Read from <code>joint_names</code>. Two generations of policy for this
+              robot order the rear legs differently; a fixed list silently swaps them.</td>
           </tr>
           <tr>
-            <th scope="row">Default stance</th>
-            <td data-h="was">Arm joint 3 hand-written as <b>70°</b>. The constant is used twice, so
-              the error lands twice.</td>
-            <td data-h="now"><b>77.35°</b> — 1.35 rad, from the official model's own initial
-              state.</td>
-          </tr>
-          <tr>
-            <th scope="row">Recovery command</th>
-            <td data-h="was">Wired to the joystick. Normalization divides that channel by a
-              near-zero σ, so a nudge is amplified about <b>30×</b>.</td>
-            <td data-h="now">Zero. The recovery task trains with all three command ranges pinned at
-              exactly zero.</td>
+            <th scope="row">Gyro bias</th>
+            <td data-h="was">Raw firmware axes, no bias removed — a <b>+54.5°/s</b> rotation the
+              robot is not doing, arriving every tick.</td>
+            <td data-h="now">Two seconds of stationary calibration at startup, axes remapped to the
+              body frame.</td>
           </tr>
           <tr>
             <th scope="row">Action clamp</th>
             <td data-h="was">None. Commands could leave the range the machine can reach.</td>
-            <td data-h="now">Joint limit ∩ actuator range, as in the simulator: thigh ceiling
-              <b>1.57 rad</b>, not the 1.91 the joint allows.</td>
+            <td data-h="now">Joint limit ∩ actuator range, as in the simulator, carried in the
+              exported metadata.</td>
           </tr>
           <tr>
             <th scope="row">Action smoothing</th>
@@ -217,14 +201,6 @@
           </tr>
         </tbody>
       </table>
-    </div>
-
-    <div class="narrow" style="margin-top:1.9rem">
-      <p class="scope">
-        <b>The exported network is the specification.</b> Anything that disagrees with it is a bug,
-        including the code you were given — and none of these announce themselves. The robot walks
-        either way; it just walks badly, and the policy takes the blame.
-      </p>
     </div>
   </div>
 </section>
@@ -288,7 +264,7 @@
       <h2>The simulated robot was 216 g too light</h2>
     </div>
 
-    <div class="split">
+    <div class="split" style="align-items:center">
       <div class="narrow">
         <p>
           The vendor's model weighed 748.8 g; the machine on the bench weighed <strong>965 g</strong>.
@@ -522,7 +498,7 @@
       <h2>The bipedal variant does not work, and here is the proof</h2>
     </div>
 
-    <div class="split">
+    <div class="split" style="align-items:center">
       <div class="narrow">
         <p>
           The obvious next ask was standing on two legs, and torque was never the constraint — the

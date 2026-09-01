@@ -101,7 +101,7 @@
 
     <div class="plate">
       <figure class="paper">
-        <img src="assets/robomaster/fig_links.jpg?v=1788221884" width="566" height="514" loading="lazy"
+        <img src="assets/robomaster/fig_links.jpg?v=1788221884" width="566" height="462" loading="lazy"
              alt="A dimensioned SolidWorks layout sketch: the two arm links drawn as slots at 250 and 270 mm, beside a 200 by 200 mm square target rotated 45 degrees with plus and minus 135 degree swing marked at its center.">
         <figcaption>
           <b>A layout sketch, not a rendering.</b> The links come out at <b>250 and 270 mm</b>,
@@ -123,7 +123,7 @@
     </div>
 
 
-    <div class="split">
+    <div class="split" style="align-items:center">
       <div class="narrow">
         <p>
           <b>Both shoulder motors are bolted to the tail, not to the arm.</b> One turns the first
@@ -152,9 +152,6 @@
           the middle is the key seat.
         </figcaption>
       </figure>
-    </div>
-
-    <div class="narrow">
     </div>
 
     <figure class="paper" style="margin-top:1.8rem">
@@ -205,7 +202,7 @@
         </p>
       </div>
 
-      <figure class="paper">
+      <figure class="paper" style="margin-top:0">
         <img src="assets/robomaster/fig_motor.jpg?v=1788221884" width="821" height="496" loading="lazy"
              alt="A motor datasheet characteristic curve: input current, efficiency, output power and torque plotted against speed.">
         <figcaption>
@@ -301,7 +298,7 @@
     </div>
 
 
-    <div class="split" style="--cols:.26fr .74fr">
+    <div class="split" style="align-items:center;--cols:.26fr .74fr">
       <figure class="paper">
         <img src="assets/robomaster/fig_lift.jpg?v=1788221884" width="384" height="625" loading="lazy"
              alt="CAD of the two-stage lift: two vertical cylinders flanking a central ball screw driven by a motor at its base, with a separate guide rail column alongside.">
@@ -329,7 +326,7 @@
               </div>
     </div>
 
-    <div class="split" style="--cols:1.22fr .78fr;margin-top:2.2rem">
+    <div class="split" style="--cols:1.22fr .78fr;margin-top:2.2rem;align-items:center">
       <div class="narrow">
         <h3>Why the two carriage blocks are not level with each other</h3>
         <p>
@@ -339,26 +336,28 @@
           <b>deliberately sets them at different heights.</b>
         </p>
         <p>
-          Side by side, the blocks are separated only <em>horizontally</em> &mdash; which handles roll
-          and yaw and does nothing for a moment acting about the axis running between them.
-          <b>No separation along the rail means no lever arm, so no force couple is available</b>, and
-          each block absorbs its share as rated pitch moment, far more restrictive than its load rating.
+          The two rails sit <b>90 mm apart</b>, and that separation is <em>horizontal</em> &mdash; it
+          handles roll and yaw and does nothing for a moment acting about the axis running between
+          them. Level with each other there is no separation <em>along</em> the rails, so
+          <b>no lever arm and no force couple</b>: each block absorbs its share as rated pitch moment,
+          far more restrictive than its load rating.
         </p>
         <p>
-          <b>Staggering them by 34 mm turns that moment into a pair of forces</b> &mdash; the higher
-          block pulled off its rail, the lower one pushed into it, each seeing a normal load instead:
+          <b>Staggering them by 24 mm along the rails turns that moment into a pair of forces</b>
+          &mdash; the higher block pulled off its rail, the lower one pushed into it, each seeing a
+          normal load instead:
         </p>
         <p class="scope">
           Level, the pair is limited by twice the block&rsquo;s permissible pitch moment —
-          <b>2 &times; 21.6 = 43 N&middot;m</b> for an MGN15C. Staggered by 34 mm the limit is the static
-          load rating on that lever arm — <b>5.59 kN &times; 0.034 m = 190 N&middot;m</b>. <b>The same
-          two blocks, about four and a half times the overturning capacity.</b> An MGN12C gives
-          4.9&times;, so the factor belongs to the arrangement, not the block.
+          <b>2 &times; 100 = 200 N&middot;m</b> for the <b>HGH15CA</b> blocks this uses. Staggered by
+          24 mm the limit is instead the static load rating acting on that lever arm —
+          <b>23.47 kN &times; 0.024 m = 563 N&middot;m</b>. <b>The same two blocks, close to three
+          times the overturning capacity</b>, for the price of a longer bracket.
         </p>
         <p>
-          And it is the cheap side of the trade: lengthening a bracket costs a little vertical space,
-          while blocks four times larger cost mass, money and room &mdash; on an axis whose whole job
-          is to lift what it is bolted to.
+          And that is the cheap side of the trade: the bracket costs a little vertical space, while
+          blocks large enough to take the moment head-on cost mass, money and room &mdash; on an axis
+          whose whole job is to lift what it is bolted to.
         </p>
     </div>
       <div>
