@@ -1,0 +1,705 @@
+/* ============================================================
+   Palette sampled from the project's own RViz costmap frames.
+   The sampled values below are the RViz originals; the tokens in
+   :root are the darkened variants actually shipped, so the two
+   deliberately differ. Shipped values are the ones in :root.
+     sampled   unknown #607771  free #d0d0d0  inflation #43a79a
+               ring #c57693     path #500051  frontier #43b63c
+   ============================================================ */
+/* ============================================================
+   Self-hosted fonts. Previously these came from Google Fonts,
+   which cost two extra domains, two DNS lookups and two TLS
+   handshakes on a serial chain — and is unreachable from
+   mainland China, where part of this work was done.
+   Files live in assets/fonts/. Archivo and Source Serif 4 are
+   variable fonts: one file covers the whole weight range.
+   ============================================================ */
+/* Archivo 600 800 — latin (variable) */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 600 800;
+  font-display: swap;
+  src: url('assets/fonts/archivo-600-800-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Archivo 600 800 — latin-ext (variable) */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 600 800;
+  font-display: swap;
+  src: url('assets/fonts/archivo-600-800-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* IBM Plex Mono 500 — latin */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('assets/fonts/ibm-plex-mono-500-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* IBM Plex Mono 400 — latin */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('assets/fonts/ibm-plex-mono-400-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* IBM Plex Mono 500 — latin-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('assets/fonts/ibm-plex-mono-500-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* IBM Plex Mono 400 — latin-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('assets/fonts/ibm-plex-mono-400-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* Source Serif 4 400 600 — latin (variable) */
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('assets/fonts/source-serif-4-400-600-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Source Serif 4 400 600 — latin-ext (variable) */
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('assets/fonts/source-serif-4-400-600-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root{
+  --unknown:      #141a19;
+  --void:         #0d1211;   /* 图/视频底衬，比页底更深一档 */
+  --unknown-2:    #1c2523;
+  --surface:      #232e2c;
+  --line:         #33413e;
+  --free:         #e9edec;
+  --free-dim:     #a9b6b3;
+  --free-faint:   #8a9895;
+  --inflation:    #43a79a;
+  --ring:         #c57693;
+  --path:         #b452b8;
+  --frontier:     #57c94f;
+
+  --measure: 68ch;
+  --gap: clamp(3.5rem, 7vw, 7rem);
+
+  --display: "Archivo", system-ui, sans-serif;
+  --body: "Source Serif 4", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  margin:0;
+  background:var(--unknown);
+  color:var(--free);
+  font-family:var(--body);
+  font-size:clamp(1rem,0.96rem + 0.2vw,1.125rem);
+  line-height:1.62;
+  /* the occupancy grid, barely there */
+  background-image:
+    linear-gradient(rgba(96,119,113,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96,119,113,.055) 1px, transparent 1px);
+  background-size:44px 44px;
+}
+img,video{ max-width:100%; height:auto; display:block; }
+
+a{ color:var(--inflation); text-underline-offset:.22em; text-decoration-thickness:1px; }
+a:hover{ color:var(--free); }
+:focus-visible{ outline:2px solid var(--inflation); outline-offset:3px; }
+
+.wrap{ width:min(1180px, 92vw); margin-inline:auto; }
+.narrow{ max-width:var(--measure); }
+
+/* ---------- type ---------- */
+.eyebrow{
+  font-family:var(--mono);
+  font-size:.72rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--free-faint); margin:0 0 1.1rem;
+}
+.eyebrow b{ color:var(--inflation); font-weight:500; }
+
+h1{
+  font-family:var(--display); font-weight:800;
+  font-size:clamp(2.1rem, 1.2rem + 3.6vw, 4.15rem);
+  line-height:1.02; letter-spacing:-.028em;
+  margin:0 0 1.5rem; max-width:20ch;
+}
+h1 em{ font-style:normal; color:var(--ring); }
+
+h2{
+  font-family:var(--display); font-weight:700;
+  font-size:clamp(1.5rem,1.1rem + 1.5vw,2.3rem);
+  line-height:1.1; letter-spacing:-.02em; margin:0 0 .9rem;
+}
+h3{
+  font-family:var(--mono); font-weight:500;
+  font-size:.78rem; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--free-dim); margin:2.6rem 0 .7rem;
+}
+p{ margin:0 0 1.15rem; }
+.lede{ font-size:1.13em; color:var(--free-dim); max-width:62ch; }
+strong{ color:var(--free); font-weight:600; }
+
+/* ---------- signature: a cross-section through the costmap ----------
+   occupied core -> inflation -> outer ring -> unknown.
+   Same profile the planner sees around every obstacle.            */
+.inflation{
+  height:9px; margin:var(--gap) 0; border:0; position:relative;
+  background:linear-gradient(90deg, var(--unknown) 0%, transparent 12%, transparent 88%, var(--unknown) 100%);
+}
+.inflation::before{
+  content:""; position:absolute; inset:0;
+  background:
+    linear-gradient(to bottom,
+      var(--void) 0 2px,
+      var(--inflation) 2px 4px,
+      color-mix(in srgb, var(--ring) 70%, transparent) 4px 6px,
+      color-mix(in srgb, var(--ring) 26%, transparent) 6px 9px);
+  mask-image:linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+
+/* ---------- hero ---------- */
+header.hero{ padding:clamp(3.5rem,8vw,7rem) 0 0; }
+.hero-grid{ display:grid; gap:clamp(1.8rem,4vw,3.2rem); grid-template-columns:1fr; align-items:start; }
+@media (min-width:920px){ .hero-grid{ grid-template-columns:1fr 360px; } }
+@media (min-width:1100px){ .hero-grid{ grid-template-columns:1fr 460px; } }
+/* "RoboMaster Engineer" is 685px set at the capped headline size and the column
+   is 669px, so that title cannot hold the phrase on one line. This page gives
+   30px back from its hero figure and lets the headline use the whole column.
+   Below 1283px the wrap is viewport-bound and no width buys it, so it wraps. */
+@media (min-width:1283px){
+  .hero-grid.wide-title{ grid-template-columns:1fr 430px; }
+  .hero-grid.wide-title h1{ max-width:none; }
+  .hero-grid.wide-title h1 .keep{ white-space:nowrap; }
+}
+/* the hero video is portrait and taller than the headline block; centring the
+   text against it turns one big hole under the lede into even margins */
+@media (min-width:920px){ .hero-grid{ align-items:center; } }
+.hero-fig{ margin:0; }
+/* Three of the five hero clips are portrait and two are landscape, which made
+   the opening of each page a different height. One box for all of them. */
+.hero-fig video, .hero-fig img{
+  width:100%; display:block; aspect-ratio:4/3; object-fit:cover; background:var(--void);
+}
+/* One hero clip is portrait for a reason — the robot and the map it is building
+   are in the same frame — so it is fitted into the box instead of cropped. */
+.hero-fig.uncropped video, .hero-fig.uncropped img{ object-fit:contain; }
+.hero-media{
+  margin-top:2.4rem; border:1px solid var(--line); background:var(--void);
+}
+.hero-media video{ width:100%; }
+/* panel labels sit under the video, each over the panel it names */
+.panel-key{
+  display:grid; grid-template-columns:var(--split, 37.5% 1fr); gap:1px;
+  margin:1px 0 0; background:var(--line); border:1px solid var(--line); border-top:0;
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase;
+}
+.panel-key span{ background:var(--unknown-2); color:var(--free-dim); padding:.5rem .8rem; }
+.panel-key span:first-child{ color:var(--inflation); }
+.panel-key.p1{ --split: 28.1% 1fr; }
+
+/* ---------- spec strip ---------- */
+.specs{
+  display:grid; gap:1px; margin-top:2.4rem;
+  grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));
+  background:var(--line); border:1px solid var(--line); border-top:0;
+}
+.specs div{ background:var(--unknown-2); padding:1.15rem 1.25rem; }
+.specs dt{
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--free-faint); margin:0 0 .45rem;
+}
+.specs dd{
+  margin:0; font-family:var(--display); font-weight:700;
+  font-size:clamp(1.35rem,1.1rem + .8vw,1.85rem); letter-spacing:-.02em;
+  color:var(--free);
+}
+.specs dd small{
+  display:block; font-family:var(--body); font-weight:400; font-size:.78rem;
+  letter-spacing:0; color:var(--free-faint); margin-top:.3rem;
+}
+
+/* One number, not four. The tile keeps the strip's own type and proportions —
+   it is the same tile every other page carries, there is just one of it — and
+   shrinks to its content instead of stretching one cell across the page. */
+.specs.solo{ grid-template-columns:minmax(0,max-content); width:max-content; max-width:100%; }
+
+/* ---------- phase sections ---------- */
+section{ padding:0; }
+/* tag sits on its own line so every heading starts at the text margin,
+   whatever the tag's length */
+.phase-head{ margin-bottom:1.6rem; }
+.phase-tag{
+  display:inline-block; margin-bottom:.85rem;
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--unknown); background:var(--inflation); padding:.3rem .6rem; white-space:nowrap;
+}
+.phase-tag.alt{ background:var(--ring); }
+.phase-tag.plain{ background:transparent; color:var(--free-faint); border:1px solid var(--line); }
+.phase-sub{ display:block; margin-top:.5rem;
+  font-family:var(--mono); font-size:.72rem; color:var(--free-faint); letter-spacing:.06em; }
+
+figure{ margin:1.8rem 0 0; border:1px solid var(--line); background:var(--void); }
+figcaption{
+  font-family:var(--mono); font-size:.72rem; line-height:1.6; color:var(--free-faint);
+  padding:.8rem 1rem; border-top:1px solid var(--line);
+}
+figcaption b{ color:var(--free-dim); font-weight:500; }
+
+.split{ display:grid; gap:clamp(1.6rem,3.5vw,3rem); grid-template-columns:1fr; align-items:start; }
+@media (min-width:900px){ .split{ grid-template-columns:var(--cols, 1.05fr .95fr); } }
+
+
+/* ---------- two-panel comparison: identical shape, captions bottom-aligned ---------- */
+.compare{ display:grid; gap:clamp(1rem,2vw,1.6rem); grid-template-columns:1fr; margin-top:1.8rem; }
+@media (min-width:820px){ .compare{ grid-template-columns:1fr 1fr; } }
+.compare figure{ margin:0; display:flex; flex-direction:column; height:100%; }
+.compare figure video{ width:100%; aspect-ratio:4/3; object-fit:cover; background:var(--void); }
+.compare figcaption{ flex:1 1 auto; }
+.surface{ font-family:var(--mono); font-size:.68rem; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--inflation); display:block; margin-bottom:.35rem; }
+.surface.warm{ color:var(--ring); }
+
+
+/* ---------- three-up gallery: identical shape, captions bottom-aligned ---------- */
+.gallery{ display:grid; gap:clamp(1rem,2vw,1.5rem); grid-template-columns:1fr; margin-top:1.8rem; }
+@media (min-width:700px){ .gallery{ grid-template-columns:repeat(2,1fr); } }
+@media (min-width:1000px){ .gallery{ grid-template-columns:repeat(3,1fr); } }
+.gallery figure{ margin:0; display:flex; flex-direction:column; height:100%; }
+.gallery figure video{ width:100%; aspect-ratio:4/3; object-fit:cover; background:var(--void); }
+.gallery figcaption{ flex:1 1 auto; }
+
+/* ---------- data table ---------- */
+table{ border-collapse:collapse; width:100%; font-family:var(--mono); font-size:.82rem; }
+caption{
+  text-align:left; font-family:var(--mono); font-size:.72rem; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--free-faint); padding-bottom:.7rem;
+}
+th,td{ text-align:left; padding:.62rem .8rem; border-bottom:1px solid var(--line); }
+th{ color:var(--free-faint); font-weight:400; }
+td:last-child{ text-align:right; color:var(--free); }
+tr.pass td:last-child{ color:var(--frontier); }
+
+/* ---------- comparison / log tables ---------- */
+/* These carry sentences, not numbers, so they drop the mono face the
+   short-value tables use. Under 640px each row becomes a stacked card and
+   the column headings move into the cells via data-h. */
+.dtab{ margin-top:1.7rem; }
+.dtab table{ font-family:var(--body); font-size:.9rem; }
+.dtab th{ font-family:var(--mono); font-size:.66rem; letter-spacing:.09em; text-transform:uppercase; }
+.dtab thead th{ color:var(--free-faint); font-weight:400; }
+.dtab th[scope="row"]{ color:var(--free); vertical-align:top; padding-left:0; }
+.dtab td, .dtab td:last-child{ vertical-align:top; text-align:left; color:var(--free-dim); }
+.dtab td:last-child{ color:var(--free); }
+.dtab td b{ color:var(--free); font-weight:600; }
+.dtab tr.win th[scope="row"]{ color:var(--inflation); }
+.dtab tr.bad th[scope="row"]{ color:var(--ring); }
+@media (min-width:641px){
+  /* fixed layout so the two content columns stay the same width and the
+     before/after pairs line up down the table */
+  .dtab table{ table-layout:fixed; }
+  /* fixed layout takes its widths from the first row, so they go on thead */
+  .dtab thead th:first-child{ width:19%; }
+  .dtab thead th:nth-child(2), .dtab thead th:nth-child(3){ width:40.5%; }
+  /* five-column variant: the tuning log carries numbers as well as prose */
+  .dtab.five table{ font-size:.85rem; }
+  .dtab.five thead th:nth-child(1){ width:7%; }
+  .dtab.five thead th:nth-child(2){ width:23%; }
+  .dtab.five thead th:nth-child(3){ width:26%; }
+  .dtab.five thead th:nth-child(4){ width:21%; }
+  .dtab.five thead th:nth-child(5){ width:23%; }
+  .dtab.five td:nth-child(4){ color:var(--free); }
+  .dtab.five td:last-child{ color:var(--free-dim); }
+}
+@media (max-width:640px){
+  .dtab thead{ display:none; }
+  .dtab tr{ display:block; border-bottom:1px solid var(--line); padding:.9rem 0; }
+  .dtab th[scope="row"], .dtab td{ display:block; border:0; padding:0; white-space:normal; }
+  .dtab th[scope="row"]{ padding-bottom:.5rem; }
+  .dtab td + td{ margin-top:.4rem; }
+  .dtab td::before{
+    content:attr(data-h) "  "; color:var(--free-faint);
+    font-family:var(--mono); font-size:.64rem; letter-spacing:.09em; text-transform:uppercase;
+  }
+}
+
+/* ---------- displayed formula ---------- */
+.eq{
+  font-family:var(--mono); font-size:.9rem; line-height:1.9; color:var(--free);
+  background:var(--unknown-2); border-left:2px solid var(--inflation);
+  padding:.9rem 1.1rem; margin:1.2rem 0; overflow-x:auto;
+}
+.eq small{
+  display:block; font-family:var(--body); font-size:.8rem; line-height:1.55;
+  color:var(--free-faint); margin-top:.65rem;
+}
+
+/* ---------- scope note ---------- */
+.scope{
+  border-left:2px solid var(--ring); padding:.15rem 0 .15rem 1.15rem;
+  color:var(--free-dim);
+}
+.scope b{ color:var(--free); }
+
+ul.plain{ list-style:none; padding:0; margin:0 0 1.15rem; }
+ul.plain li{ padding-left:1.3rem; position:relative; margin-bottom:.55rem; color:var(--free-dim); }
+ul.plain li::before{
+  content:""; position:absolute; left:0; top:.62em;
+  width:7px; height:7px; background:var(--inflation);
+}
+ul.plain li b{ color:var(--free); font-weight:600; }
+
+/* ---------- footer ---------- */
+footer{
+  margin-top:var(--gap); border-top:1px solid var(--line);
+  padding:2.2rem 0 3.5rem; font-family:var(--mono); font-size:.78rem; color:var(--free-faint);
+}
+footer a{ margin-right:1.4rem; display:inline-block; }
+.back{ font-family:var(--mono); font-size:.75rem; letter-spacing:.1em; text-transform:uppercase; }
+
+@media (prefers-reduced-motion:reduce){
+  *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+}
+
+/* provenance note: distinguishes simulated results from on-robot measurements */
+.sim-note{
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--free-faint);
+  margin:0 0 .9rem; padding-left:.7rem; border-left:2px solid var(--path);
+}
+
+/* ============================================================
+   HOME PAGE ONLY  (index.html)
+   No new colours, no new typefaces — everything below is
+   composed from the tokens already defined at the top.
+   ============================================================ */
+
+.home-contact{
+  display:flex; flex-wrap:wrap; gap:.35rem 1.6rem;
+  margin-top:2.2rem; padding-top:1.5rem; border-top:1px solid var(--line);
+  font-family:var(--mono); font-size:.78rem; letter-spacing:.02em;
+}
+/* padding, not margin: it grows the tap target itself.
+   Lighthouse wants >= 24x24 px with clear spacing between neighbours. */
+.home-contact a{ color:var(--free-dim); padding:.45rem 0; display:inline-block; }
+.home-contact a:hover{ color:var(--inflation); }
+
+/* ---------- the work list ----------
+   Each entry carries the one number that was measured, and the
+   thing it was measured against. Reverse chronological: the dates
+   are the structure because the progression is real information. */
+.work-list{ list-style:none; padding:0; margin:0; }
+
+.work-item{ border-top:1px solid var(--line); }
+.work-item:last-child{ border-bottom:1px solid var(--line); }
+
+/* the whole row is the link, so the target is large and obvious */
+.work-item > a{
+  display:grid; position:relative;
+  grid-template-columns:1fr;
+  gap:1.3rem clamp(1.5rem,3vw,3rem);
+  padding:2.1rem 1.25rem 2.1rem 1.6rem;
+  color:inherit; text-decoration:none;
+  transition:background-color .18s ease;
+}
+/* signature: the costmap inflation profile from .inflation, stood on
+   its end. Same stops, same order — occupied core, inflation, ring. */
+.work-item > a::before{
+  content:""; position:absolute; left:0; top:0; bottom:0; width:9px;
+  background:linear-gradient(90deg,
+    var(--void)            0 2px,
+    var(--inflation)   2px 4px,
+    color-mix(in srgb, var(--ring) 70%, transparent) 4px 6px,
+    color-mix(in srgb, var(--ring) 26%, transparent) 6px 9px);
+  opacity:.35;
+  transition:opacity .18s ease;
+}
+.work-item > a:hover, .work-item > a:focus-visible{ background:var(--unknown-2); }
+.work-item > a:hover::before, .work-item > a:focus-visible::before{ opacity:1; }
+
+.work-meta{
+  font-family:var(--mono); font-size:.7rem; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--free-faint);
+  margin:0 0 .7rem;
+}
+.work-meta b{ color:var(--free-dim); font-weight:400; }
+
+/* NOTE: .work-title is an <h3>. The global h3 rule sets mono/uppercase/
+   small, so every one of those properties has to be reset here or the
+   title inherits them. text-transform is the easy one to forget. */
+.work-title{
+  font-family:var(--display); font-weight:700;
+  font-size:clamp(1.35rem,1.05rem + 1.1vw,1.95rem);
+  line-height:1.15; letter-spacing:-.02em; text-transform:none;
+  margin:0 0 .55rem; color:var(--free);
+  display:flex; align-items:baseline; gap:.65rem;
+}
+.work-title .arrow{
+  font-family:var(--mono); font-size:1.05rem; font-weight:400;
+  color:var(--free-dim); transition:transform .18s ease, color .18s ease;
+}
+.work-item > a:hover .arrow, .work-item > a:focus-visible .arrow{
+  color:var(--inflation); transform:translateX(.4rem);
+}
+
+/* the project's own thesis sentence, in its own words */
+.work-claim{ margin:0; color:var(--free-dim); max-width:56ch; }
+
+/* the measurement, and what it was measured against */
+.work-metric{
+  margin:0; align-self:stretch;
+  font-family:var(--mono); font-size:.74rem; line-height:1.6;
+  color:var(--free-faint);
+  padding-top:1.35rem; border-top:1px solid var(--line);
+}
+@media (min-width:900px){
+  .work-metric{ padding-top:0; border-top:0; border-left:1px solid var(--line); padding-left:clamp(1.2rem,2vw,1.8rem); }
+}
+.work-metric dt{
+  font-family:var(--display); font-weight:700; letter-spacing:-.02em;
+  font-size:clamp(1.5rem,1.15rem + 1vw,2rem); line-height:1.05;
+  color:var(--free); margin-bottom:.6rem;
+}
+.work-metric dd{ margin:0; }
+.work-metric dd b{ color:var(--free-dim); font-weight:400; }
+
+/* ---- site-wide a11y fix (applies to every page, not just the home page) ----
+   Footer links measured 20 px tall — under the 24 px minimum tap target that
+   WCAG 2.2 / Lighthouse ask for. Padding grows the hit area without moving
+   anything on screen. Flagged here because this rule is NOT home-page-scoped. */
+footer a{ padding:.4rem 0; }
+
+/* ---------- figure plate: two natural-aspect figures, captions bottom-aligned ---------- */
+.plate{ display:grid; gap:clamp(1rem,2vw,1.5rem); grid-template-columns:1fr; margin-top:1.8rem; }
+@media (min-width:760px){ .plate{ grid-template-columns:1fr 1fr; } }
+.plate figure{ margin:0; display:flex; flex-direction:column; height:100%; }
+.plate figcaption{ flex:1 1 auto; }
+.plate img{ width:100%; }
+/* figures lifted straight out of the paper keep their own white ground */
+.paper img{ background:#fbfbf9; padding:.85rem; }
+
+/* ---------- home hero: the lab's own occupancy grid ----------
+   assets/hero-map.svg is generated by plots/gen_hero_map.py from the real
+   auto_map.pgm the six-bar robot produced, with the five AMCL runs traced
+   over it. The SVG is inlined into index.html; the draw-on animation
+   and its prefers-reduced-motion guard live in this stylesheet, below. */
+.home-grid{ display:grid; gap:clamp(2rem,4vw,3.4rem); grid-template-columns:1fr; align-items:center; }
+@media (min-width:960px){ .home-grid{ grid-template-columns:1fr minmax(300px,400px); } }
+
+.home-map{ margin:0; position:relative; }
+.home-map img{ width:100%; height:auto; display:block; }
+.home-map figcaption{
+  font-family:var(--mono); font-size:.68rem; line-height:1.6;
+  letter-spacing:.06em; color:var(--free-faint);
+  padding:.75rem 0 0; border:0; border-top:1px solid var(--line); margin-top:.9rem;
+}
+.home-map figcaption b{ color:var(--inflation); font-weight:400; }
+
+/* ---------- work row thumbnails ---------- */
+.work-thumb{ margin:0; border:1px solid var(--line); background:var(--void); overflow:hidden; }
+.work-thumb img{
+  width:100%; aspect-ratio:4/3; object-fit:cover; display:block;
+  filter:saturate(.92); transition:filter .18s ease, transform .3s ease;
+}
+.work-item > a:hover .work-thumb img,
+.work-item > a:focus-visible .work-thumb img{ filter:saturate(1.05); transform:scale(1.03); }
+
+
+/* 轨迹依次画出来 —— 一次性入场，不循环。dasharray 的数值就是各条 path 的
+   实际长度（由 plots/gen_hero_map.py 算出并硬编码在下面），所以线不会出现
+   接缝。reduced-motion 下直接呈现终态。 */
+.map-svg{ width:100%; height:auto; display:block; }
+.map-svg path{ stroke-dashoffset:0; }
+.map-svg .t1{ stroke-dasharray:269; stroke-dashoffset:269; animation:trace 2.6s cubic-bezier(.22,.61,.36,1) .15s forwards; }
+.map-svg .t2{ stroke-dasharray:295; stroke-dashoffset:295; animation:trace 2.6s cubic-bezier(.22,.61,.36,1) .43s forwards; }
+.map-svg .t3{ stroke-dasharray:293; stroke-dashoffset:293; animation:trace 2.6s cubic-bezier(.22,.61,.36,1) .71s forwards; }
+.map-svg .t4{ stroke-dasharray:296; stroke-dashoffset:296; animation:trace 2.6s cubic-bezier(.22,.61,.36,1) .99s forwards; }
+.map-svg .t5{ stroke-dasharray:295; stroke-dashoffset:295; animation:trace 2.6s cubic-bezier(.22,.61,.36,1) 1.27s forwards; }
+@keyframes trace{ to{ stroke-dashoffset:0; } }
+@media (prefers-reduced-motion:reduce){
+  .map-svg .t1,.map-svg .t2,.map-svg .t3,.map-svg .t4,.map-svg .t5{
+    animation:none; stroke-dashoffset:0;
+  }
+}
+
+/* ---------- work row layout, three steps ----------
+   < 900px   everything stacked
+   900-1080  two columns: [thumb + prose] | [measurement]
+   >= 1080   three columns: thumb | prose | measurement
+   The 3-up needs real width; forcing it at 900 squeezed the title to two
+   lines and left the prose column at ~380px. :has() picks out the rows
+   that actually carry a thumbnail (Baseline since Dec 2023). */
+@media (min-width:900px){
+  .work-item > a{ grid-template-columns:1fr minmax(230px,290px); grid-template-rows:auto auto auto 1fr; }
+  .work-item > a > .work-thumb { grid-column:1; grid-row:1; max-width:260px; }
+  .work-item > a > .work-meta  { grid-column:1; grid-row:2; }
+  .work-item > a > .work-title { grid-column:1; grid-row:3; }
+  .work-item > a > .work-claim { grid-column:1; grid-row:4; }
+  .work-item > a > .work-metric{ grid-column:2; grid-row:1 / -1; }
+  /* rows with no thumbnail: prose starts at row 1, nothing left hanging */
+  .work-item > a:not(:has(.work-thumb)) > .work-meta { grid-row:1; }
+  .work-item > a:not(:has(.work-thumb)) > .work-title{ grid-row:2; }
+  .work-item > a:not(:has(.work-thumb)) > .work-claim{ grid-row:3; }
+}
+@media (min-width:1080px){
+  .work-item > a:has(.work-thumb){
+    grid-template-columns:minmax(150px,200px) 1fr minmax(230px,290px);
+    grid-template-rows:auto auto 1fr;
+  }
+  .work-item > a:has(.work-thumb) > .work-thumb { grid-column:1; grid-row:1 / -1; max-width:none; align-self:start; }
+  .work-item > a:has(.work-thumb) > .work-meta  { grid-column:2; grid-row:1; }
+  .work-item > a:has(.work-thumb) > .work-title { grid-column:2; grid-row:2; }
+  .work-item > a:has(.work-thumb) > .work-claim { grid-column:2; grid-row:3; }
+  .work-item > a:has(.work-thumb) > .work-metric{ grid-column:3; grid-row:1 / -1; }
+}
+
+/* ============================================================
+   SITE NAVIGATION  (added 2026-08-29)
+   Before this, a project page had exactly one internal link —
+   "← All projects" at the very bottom — and carried no contact
+   detail at all. A recruiter or professor deep-links straight
+   into a project page from a CV or an email; they never arrive
+   through the home page. So every page now carries the whole
+   set, and the contact line is reachable from anywhere.
+   No JavaScript: it is a flex row of links that wraps.
+   ============================================================ */
+
+/* keyboard users land here first; invisible until focused */
+.skip{
+  position:absolute; left:-9999px; top:0; z-index:100;
+  font-family:var(--mono); font-size:.78rem;
+  background:var(--inflation); color:var(--unknown);
+  padding:.65rem 1rem; text-decoration:none;
+}
+.skip:focus{ left:0; }
+
+.sitenav{
+  border-bottom:1px solid var(--line);
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.1em;
+}
+.sitenav .wrap{
+  display:flex; flex-wrap:wrap; align-items:baseline;
+  gap:.2rem 1.35rem; padding:.95rem 0;
+}
+.sitenav a{
+  color:var(--free-faint); text-decoration:none;
+  padding:.35rem 0;                      /* >=24px tap target */
+  border-bottom:1px solid transparent;
+}
+.sitenav a:hover{ color:var(--free); }
+.sitenav a[aria-current="page"]{ color:var(--free); border-bottom-color:var(--inflation); }
+.sitenav .home{ color:var(--free-dim); margin-right:auto; }
+.sitenav .home:hover{ color:var(--inflation); }
+
+/* contact row in the footer of every page */
+.footer-contact{
+  display:flex; flex-wrap:wrap; gap:.2rem 1.4rem;
+  margin-top:1.2rem; padding-top:1.2rem; border-top:1px solid var(--line);
+}
+footer .footer-contact a{ margin-right:0; padding:.4rem 0; }
+
+/* 视觉上隐藏但留给屏幕阅读器 —— 表格角落单元格需要一个名字，
+   但画在页面上会显得多余。 */
+.visually-hidden{
+  position:absolute; width:1px; height:1px; margin:-1px; padding:0;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+
+/* 页脚级的小字备注（代码是否公开、素材来源等）。
+   之前这条在四个页面里是同一段内联 style，现在收成一个类。 */
+.note{
+  color:var(--free-faint); font-family:var(--mono);
+  font-size:.78rem; line-height:1.7; margin-top:1.6rem;
+}
+
+/* .split 的列宽可按需覆盖 —— 两侧内容长短差得多时，
+   给长的一侧更多宽度，两列高度才拉得平。
+   用法：<div class="split" style="--cols:.8fr 1.2fr"> */
+
+/* 窄图独占一行时，让说明文字挪到图旁边，而不是让右半边空着。
+   语义不变 —— figcaption 仍在 figure 里，只是网格换了位置。 */
+@media (min-width:900px){
+  figure.fig-side{ display:grid; grid-template-columns:var(--fig, 1fr 1fr); align-items:start; }
+  figure.fig-side img, figure.fig-side video{ width:100%; }
+  figure.fig-side figcaption{
+    border-top:0; border-left:1px solid var(--line);
+    padding:1rem 1.1rem; align-self:stretch;
+  }
+}
+
+
+
+
+/* ============================================================
+   FOOTER PROJECT NAV  (added 2026-08-30)
+   顶部那排是紧凑的定位条；页尾这排是「读完了，接下来看什么」，
+   所以带上项目名和时间，让人直接挑，而不是先退回首页。
+   当前页保留在列表里但不可点，位置感才不会丢。
+   ============================================================ */
+.footnav{
+  display:grid; gap:1px;
+  grid-template-columns:repeat(auto-fit, minmax(min(210px,100%), 1fr));
+  background:var(--line); border:1px solid var(--line);
+  margin-bottom:2rem;
+}
+.footnav a, .footnav span.here{
+  display:block; background:var(--unknown-2);
+  padding:1rem 1.15rem; text-decoration:none; margin:0;
+  transition:background-color .18s ease;
+}
+.footnav a:hover{ background:var(--surface); }
+.footnav .fn-when{
+  display:block; font-family:var(--mono); font-size:.64rem;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--free-faint);
+  margin-bottom:.4rem;
+}
+.footnav .fn-title{
+  display:block; font-family:var(--display); font-weight:600;
+  font-size:.94rem; line-height:1.25; letter-spacing:-.01em; color:var(--free-dim);
+}
+.footnav a:hover .fn-title{ color:var(--free); }
+.footnav span.here .fn-title{ color:var(--free); }
+.footnav span.here{ background:var(--unknown); cursor:default; }
+.footnav span.here .fn-when{ color:var(--inflation); }
+
+.footer-end{ display:flex; flex-wrap:wrap; align-items:baseline; gap:.2rem 1.4rem; }
+.footer-end .back{ margin-right:0; }
+
+/* The three-band figure is the reference for everything the prose beside it
+   describes (y1, y2, the green span), and that prose is more than twice as
+   tall. Pin the figure so it stays next to whichever paragraph is being read
+   instead of scrolling away and leaving a column of empty space. */
+@media (min-width:900px){
+  .stick-col{ align-self:stretch; }
+  .stick{ position:sticky; top:2rem; }
+}

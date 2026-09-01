@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RoboMaster Engineer — SCARA Arm Design — Tian (Kris) Xia</title>
+<meta name="description" content="Designing the SCARA arm on a RoboMaster Engineer robot: why the configuration is PRRRR, why both shoulder motors live at the tail, and why the beam is a carbo">
+<link rel="canonical" href="https://kriswonka.github.io/robomaster.html">
+<link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+<meta name="theme-color" content="#141a19">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Tian (Kris) Xia">
+<meta property="og:title" content="RoboMaster Engineer — SCARA Arm Design — Tian (Kris) Xia">
+<meta property="og:description" content="Designing the SCARA arm on a RoboMaster Engineer robot: why the configuration is PRRRR, why both shoulder motors live at the tail, and why the beam is a carbo">
+<meta property="og:url" content="https://kriswonka.github.io/robomaster.html">
+<meta property="og:image" content="https://kriswonka.github.io/assets/og/robomaster.jpg?v=1788221884">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="RoboMaster Engineer — SCARA Arm Design — Tian (Kris) Xia">
+<meta name="twitter:description" content="Designing the SCARA arm on a RoboMaster Engineer robot: why the configuration is PRRRR, why both shoulder motors live at the tail, and why the beam is a carbo">
+<meta name="twitter:image" content="https://kriswonka.github.io/assets/og/robomaster.jpg?v=1788221884">
+<link rel="preload" href="assets/fonts/archivo-600-800-latin.woff2?v=1788221884" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/source-serif-4-400-600-latin.woff2?v=1788221884" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css?v=1788221884">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<nav class="sitenav" aria-label="Projects"><div class="wrap">
+  <a href="index.html" class="home">All projects</a>
+  <a href="quadruped.html">Quadruped</a>
+  <a href="slam.html">SLAM</a>
+  <a href="army.html">ArmY</a>
+  <a href="linefollower.html">Air car</a>
+  <a href="robomaster.html" aria-current="page">RoboMaster</a>
+</div></nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow"><b>RoboMaster</b> · Dalian University of Technology · Engineer robot · 2024 season</p>
+
+    <div class="hero-grid wide-title">
+      <div>
+        <h1><span class="keep">RoboMaster Engineer</span> — SCARA Arm</h1>
+        <p class="lede">
+          The Engineer robot takes a 650&nbsp;g ore cube off a resource island and puts it into an
+          exchange station well above it. I designed the <b>SCARA arm and its two-stage lift</b> —
+          the configuration, the link lengths, where the motors sit, the beam section, and the
+          shafting that holds it together.
+        </p>
+      </div>
+      <figure class="hero-fig">
+        <img src="assets/robomaster/hero.jpg?v=1788221884" width="1200" height="900"
+             alt="The finished Engineer robot photographed against white: mecanum chassis, the vertical lift column, and the SCARA arm reaching up and to the left with its end effector.">
+      </figure>
+    </div>
+
+    <dl class="specs solo">
+      <div><dt>Configuration</dt><dd>PRRRR<small>one prismatic axis, four revolute</small></dd></div>
+    </dl>
+  </div>
+</header>
+
+<main id="main">
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag">Step 1</span>
+      <h2>Why a SCARA, and what that buys the rest of the design</h2>
+      <span class="phase-sub">PRRRR &mdash; one prismatic axis, four revolute</span>
+    </div>
+
+
+    <div>
+      <p>
+        The Engineer picks a 650&nbsp;g ore cube up near the deck and puts it into an exchange station
+        well above it. <b>That is a lot of vertical travel against a modest horizontal reach</b>, and
+        the two are independent of each other &mdash; which is exactly the split a SCARA is built
+        around.
+      </p>
+      <p>
+        So the arm is <strong>PRRRR</strong>: a prismatic axis doing the whole tall Z, and four
+        revolute joints doing the rest. Both shoulder axes are vertical, so the links fold in a
+        horizontal plane and the rail sets the height on its own. Three things follow:
+      </p>
+      <ul class="plain">
+        <li><b>Height and reach are set separately</b> &mdash; the rail length fixes one, the link
+          lengths fix the other, and neither constrains the other</li>
+        <li><b>The axes barely interact</b> &mdash; moving Z changes neither reach nor orientation</li>
+        <li><b>Gravity is not held by a motor</b> &mdash; an RRR shoulder supplies holding torque
+          against the arm's weight forever; here the prismatic axis carries it</li>
+      </ul>
+      <p>
+        That last point decides the sizing: <b>with no gravity term, all a joint has to be sized
+        against is the torque to accelerate its link.</b>
+      </p>
+    </div>
+
+    <div class="plate">
+      <figure class="paper">
+        <img src="assets/robomaster/fig_links.jpg?v=1788221884" width="566" height="514" loading="lazy"
+             alt="A dimensioned SolidWorks layout sketch: the two arm links drawn as slots at 250 and 270 mm, beside a 200 by 200 mm square target rotated 45 degrees with plus and minus 135 degree swing marked at its center.">
+        <figcaption>
+          <b>A layout sketch, not a rendering.</b> The links come out at <b>250 and 270 mm</b>,
+          sized against the <b>200 &times; 200 mm</b> target and the <b>&plusmn;135&deg;</b> swing at
+          its center — settled before any part existed.
+        </figcaption>
+      </figure>
+      <figure class="paper">
+        <img src="assets/robomaster/fig_arm.jpg?v=1788221884" width="1100" height="815" loading="lazy"
+             alt="CAD view of the complete arm: the vertical lift column on the left, the two links extending right, and the ore cube held at the end effector.">
+        <figcaption>
+          The whole arm in CAD, with the cube where it has to end up.
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="narrow">
+      <h3>What the drive shaft is actually resisting</h3>
+    </div>
+
+
+    <div class="split">
+      <div class="narrow">
+        <p>
+          <b>Both shoulder motors are bolted to the tail, not to the arm.</b> One turns the first
+          link directly through its flange; the other drives a pulley on a short shaft, and a timing
+          belt carries that torque out along the beam to the elbow. The links accelerate the payload
+          and themselves &mdash; they never have to accelerate the actuators as well.
+        </p>
+        <p>
+          <b>That belt shaft takes exactly two loads.</b> Torque arrives through the flange, and the
+          belt&rsquo;s preload pulls on the pulley &mdash; <em>purely radial</em>, perpendicular to
+          the axis. Nothing pushes along the shaft at all.
+        </p>
+        <p>
+          So the radial pull is what gets designed for, <b>split between two bearings</b>. Those two
+          loads set the shaft diameter; the axial constraints set nothing, and only keep parts where
+          they belong.
+        </p>
+      </div>
+
+      <figure class="paper">
+        <img src="assets/robomaster/shaft_section.jpg?v=1788221884" width="1000" height="735" loading="lazy"
+             alt="CAD section of the belt drive shaft: a stepped shaft running down the centre with a ball bearing at the top and another at the bottom, the timing-belt pulley between them, a key seat visible in the shaft, and the carbon beam entering from the right.">
+        <figcaption>
+          <b>The pulley sits between the two bearings</b> &mdash; outer rings against housing
+          shoulders, the upper inner ring held by a circlip, the lower one by a sleeve. The slot down
+          the middle is the key seat.
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="narrow">
+    </div>
+
+    <figure class="paper" style="margin-top:1.8rem">
+      <img src="assets/robomaster/arm_section.jpg?v=1788221884" width="1400" height="594" loading="lazy"
+           alt="Wide CAD section along the whole arm: the two stacked shoulder motors at the left, the hollow carbon square beam running right, and the elbow joint with its own bearings at the far right.">
+      <figcaption>
+        <b>Both motors sit at the left, at the shoulder; the beam and the elbow carry no actuator.</b>
+      </figcaption>
+    </figure>
+
+    <div class="plate">
+      <figure class="paper">
+        <img src="assets/robomaster/shaft_dwg.jpg?v=1788221884" width="1400" height="978" loading="lazy"
+             alt="Engineering drawing of the belt drive shaft: a stepped shaft with a flange and bolt circle, a key seat, and a circlip groove detailed at four to one, with an A-A section below.">
+        <figcaption>
+          <b>The shaft as drawn</b> &mdash; the key seat that takes the torque, and the circlip
+          groove that does not, at 4:1. From the write-up, so the sizes on it are that
+          exercise&rsquo;s; the method is what transfers.
+        </figcaption>
+      </figure>
+      <figure class="paper">
+        <img src="assets/robomaster/arm_iso.jpg?v=1788221884" width="1100" height="847" loading="lazy"
+             alt="Isometric CAD view of the arm: the small belt motor stacked above the large joint motor at the shoulder, the timing belt running out along the carbon beam, and the elbow flange at the far end.">
+        <figcaption>
+          <b>Motor stack at the shoulder, belt out along the beam, elbow flange at the far end.</b>
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="narrow">
+      <h3>Sizing the joints</h3>
+    </div>
+
+
+    <div class="split">
+      <div class="narrow">
+        <p>
+          Idealize the link as a slender rod turning about its end (<strong>J = mL&sup2;/3</strong>),
+          take &alpha; off the trapezoidal velocity ramp, and <strong>M = J&alpha;</strong> with a
+          <strong>1.2</strong> factor gives the requirement. Selection is graphical from there:
+          <b>the operating point has to land under the manufacturer&rsquo;s curve.</b>
+        </p>
+        <p class="scope">
+          And then the honest part. The motor actually fitted — an <b>lk8016</b> — is more than
+          <b>twice</b> the computed torque, because a competition robot lives outside its design case:
+          it gets shoved, it hits walls. <b>The calculation sets the floor; the margin is a judgement
+          about the environment</b> — and on the field that margin is what survived the collisions.
+        </p>
+      </div>
+
+      <figure class="paper">
+        <img src="assets/robomaster/fig_motor.jpg?v=1788221884" width="821" height="496" loading="lazy"
+             alt="A motor datasheet characteristic curve: input current, efficiency, output power and torque plotted against speed.">
+        <figcaption>
+          <b>The kind of chart the operating point has to sit under.</b>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag alt">Step 2</span>
+      <h2>Why the beam is a carbon octagon</h2>
+    </div>
+
+
+    <div class="split" style="--cols:1.28fr .72fr">
+      <div class="narrow">
+        <p>
+          The link between the joints is a cantilever: the cube and the arm's own weight act out at
+          the far end. What you want is the smallest deflection <b>&delta;</b> under that load, and
+          for a given material that means the largest <b>second moment of area</b> of the section.
+        </p>
+        <p>
+          That quantity is <strong>I = &int;y&sup2;&thinsp;dA</strong> about the neutral axis &mdash;
+          the plane through the section carrying no stress, tension above it and compression below.
+          <b>The y&sup2; is the whole story: material far from the neutral axis counts far more than
+          material near it.</b> <b>Which is exactly what an I-beam does</b>, and why it is so good in
+          bending.
+        </p>
+        <p>
+          But this beam is not in pure bending. <b>It is cranked</b>, so a load at the end does not
+          act through the beam's axis, and that offset raises a <b>torque</b> too. An I-beam is an
+          open section: excellent in bending, poor in torsion. So the section has to be <em>closed</em>
+          and still keep material out at the edges — and it has to be easy to clamp to:
+          <b>a round tube will not hold a fitting, and a square one chews up the brackets</b>.
+          <b>A hollow octagonal tube was the best thing we could buy against all of that.</b>
+        </p>
+        <p>
+          That settles the shape, not the material &mdash; an aluminum tube of the same section would
+          carry the bending perfectly well.
+        </p>
+        <p class="scope">
+          The whole vehicle has a mass budget, so the quantity to maximize is <b>specific stiffness:
+          how much stiffness each gram buys.</b>
+        </p>
+        <p>
+          Carry the bending <em>and</em> the torsion under a fixed mass budget, and a carbon-fiber
+          octagonal tube wins it &mdash; <b>30 &times; 20 mm across the flats with a 1.5 mm wall</b>,
+          almost all of the material at the perimeter where the y&sup2; pays for it.
+        </p>
+        <p>
+          And it is fitted <b>30 mm axis vertical</b>, standing in the plane the arm bends in. Run
+          the section through the same integral both ways and it comes out at roughly <b>17,100
+          mm&#8308; on the deep axis against 8,900 mm&#8308; on the shallow one</b>: <b>the same tube
+          turned ninety degrees loses about half its bending stiffness</b>.
+        </p>
+
+      </div>
+
+      <div>
+        <figure style="margin-top:0">
+          <img src="assets/robomaster/beam_section.jpg?v=1788221884" width="900" height="900" loading="lazy"
+               alt="A carbon-fibre octagonal tube with its dimensioned cross-section inset: 30 mm across one axis, 20 mm across the other, 1.5 mm wall.">
+          <figcaption>
+            The tube, and its section. <b>30 &times; 20 mm across the flats, 1.5 mm wall.</b>
+          </figcaption>
+        </figure>
+        <figure class="paper">
+          <img src="assets/robomaster/beam_in_arm.jpg?v=1788221884" width="1000" height="966" loading="lazy"
+               alt="CAD view of the shoulder with the carbon beam cut short at its far end, so the octagonal section shows face-on.">
+          <figcaption>
+            <b>The octagonal section in CAD.</b>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag">Step 3</span>
+      <h2>Two ways of going up</h2>
+      <span class="phase-sub">400 mm first stage, 350 mm second stage</span>
+    </div>
+
+
+    <div class="split" style="--cols:.26fr .74fr">
+      <figure class="paper">
+        <img src="assets/robomaster/fig_lift.jpg?v=1788221884" width="384" height="625" loading="lazy"
+             alt="CAD of the two-stage lift: two vertical cylinders flanking a central ball screw driven by a motor at its base, with a separate guide rail column alongside.">
+        <figcaption><b>The lift.</b></figcaption>
+      </figure>
+
+      <div class="narrow">
+        <p>
+          The prismatic axis has to cover a large height <em>and</em> place the cube precisely at the
+          top of it &mdash; two requirements wanting two different machines. So it is <b>staged</b>:
+        </p>
+        <ul class="plain">
+          <li><b>First stage — a cylinder, 400 mm.</b> Fast, light, two useful states, no position
+            feedback and none needed: it raises the whole arm structure.</li>
+          <li><b>Second stage — a servo-driven ball screw, 350 mm.</b> Slower and heavier per
+            millimetre, but it holds a commanded position — this is what puts the arm at the right
+            height for the exchange.</li>
+        </ul>
+        <p>
+          All 750 mm on the screw would have been accurate and far too slow; all of it on the
+          cylinder, quick and unable to stop where it was told. <b>The cylinder skips the dead height
+          in the middle and the screw does the fine work</b> &mdash; that split is the whole point.
+        </p>
+
+              </div>
+    </div>
+
+    <div class="split" style="--cols:1.22fr .78fr;margin-top:2.2rem">
+      <div class="narrow">
+        <h3>Why the two carriage blocks are not level with each other</h3>
+        <p>
+          The SCARA platform hangs off the front of the carriage, so what it puts into the rails is
+          weight <em>plus an overturning moment</em>, trying to tip the platform nose-down. There are
+          two rails, one block on each, and the aluminium bracket joining them to the platform
+          <b>deliberately sets them at different heights.</b>
+        </p>
+        <p>
+          Side by side, the blocks are separated only <em>horizontally</em> &mdash; which handles roll
+          and yaw and does nothing for a moment acting about the axis running between them.
+          <b>No separation along the rail means no lever arm, so no force couple is available</b>, and
+          each block absorbs its share as rated pitch moment, far more restrictive than its load rating.
+        </p>
+        <p>
+          <b>Staggering them by 34 mm turns that moment into a pair of forces</b> &mdash; the higher
+          block pulled off its rail, the lower one pushed into it, each seeing a normal load instead:
+        </p>
+        <p class="scope">
+          Level, the pair is limited by twice the block&rsquo;s permissible pitch moment —
+          <b>2 &times; 21.6 = 43 N&middot;m</b> for an MGN15C. Staggered by 34 mm the limit is the static
+          load rating on that lever arm — <b>5.59 kN &times; 0.034 m = 190 N&middot;m</b>. <b>The same
+          two blocks, about four and a half times the overturning capacity.</b> An MGN12C gives
+          4.9&times;, so the factor belongs to the arrangement, not the block.
+        </p>
+        <p>
+          And it is the cheap side of the trade: lengthening a bracket costs a little vertical space,
+          while blocks four times larger cost mass, money and room &mdash; on an axis whose whole job
+          is to lift what it is bolted to.
+        </p>
+    </div>
+      <div>
+        <figure class="paper" style="margin-top:0">
+          <img src="assets/robomaster/bracket.jpg?v=1788221884" width="1000" height="1124" loading="lazy"
+               alt="Close CAD view of the machined aluminium carriage bracket: two rail-block mounting faces set at different heights, with the joint motor and belt pulley above.">
+          <figcaption><b>The bracket that sets the offset.</b></figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag alt">Step 4</span>
+      <h2>The chassis fix that outlived the robot</h2>
+    </div>
+
+
+    <div>
+      <p>
+        The chassis is an ordinary mecanum platform with a self-designed adaptive suspension —
+        two aluminum square tubes taking the load, vertical carbon plates front and rear, a
+        four-bar linkage through the middle. The part worth writing down is a failure.
+      </p>
+      <p class="scope">
+        The carbon plates either side of each wheel axle were joined <b>only at the top</b>. That
+        makes each plate a <b>cantilever</b>: load the wheel and the lower edge deflects, and the
+        flange bearing in the mecanum hub <b>walks out of the plate</b>. The wheel set goes loose,
+        and it does it mid-match.
+      </p>
+      <p>
+        The fix closes the cantilever rather than stiffening it: a <b>plane needle-roller bearing</b>
+        on the outer edge of the outer plate, clamped with <b>M6 screws</b>, so the plate is
+        supported at both ends instead of one. It survived the season, and <b>later robots carried
+        the clamping scheme over unchanged</b>.
+      </p>
+    </div>
+
+    <div class="plate">
+      <figure class="paper">
+        <img src="assets/robomaster/wheel_section.jpg?v=1788221884" width="900" height="1191" loading="lazy"
+             alt="CAD section through one wheel module: the mecanum wheel and its rollers in the middle, the drive motor to the left, a carbon plate either side of the axle, and the suspension springs above.">
+        <figcaption>
+          <b>One wheel module, sectioned.</b> A carbon plate either side of the axle, motor inboard,
+          rocker and spring above.
+        </figcaption>
+      </figure>
+      <figure class="paper">
+        <img src="assets/robomaster/wheel_iso.jpg?v=1788221884" width="1000" height="1189" loading="lazy"
+             alt="Isometric CAD section of the wheel module and its suspension: the carbon side plate cut away to show the motor, the hub bearing and the rocker linkage with its coil-over spring.">
+        <figcaption>
+          <b>The outer edge of the outer plate is where the added bearing and the M6 clamp go</b>,
+          turning a cantilever into a supported span.
+        </figcaption>
+      </figure>
+    </div>
+
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+      <h2>What I actually did</h2>
+      <div class="split" style="--cols:1.25fr .75fr;margin-top:1.4rem">
+        <div>
+        <p class="scope">
+      The Engineer is one robot in a university RoboMaster team, and a team builds it.
+      <b>The mechanical design of this first-generation machine was mine, end to end</b> — the SCARA
+      arm, the two-stage lift and the chassis: configuration, link and joint sizing, motor placement
+      and torque path, section and material, and the shafting, bearings and wheel modules.
+    </p>
+        </div>
+        <div>
+        <ul class="plain">
+      <li><b>Designed in SolidWorks</b>, load cases checked before anything was machined</li>
+      <li><b>Selected the drivetrain and the actuators</b> — joint motors against computed inertia
+        and torque-speed curves, the lift stages against a force calculation and the supplier's
+        tables, with the margin chosen deliberately over the computed floor</li>
+    </ul>
+        </div>
+      </div>
+    </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+      <nav class="footnav" aria-label="All projects">
+        <a href="quadruped.html"><span class="fn-when">Jul – Aug 2026</span><span class="fn-title">Quadruped Fall Recovery</span></a>
+        <a href="slam.html"><span class="fn-when">Jan – May 2026</span><span class="fn-title">SLAM Walking Robot</span></a>
+        <a href="army.html"><span class="fn-when">Oct 2025 – Mar 2026</span><span class="fn-title">ArmY — Grasp-Pose Selection</span></a>
+        <a href="linefollower.html"><span class="fn-when">Spring 2025</span><span class="fn-title">Compressed-Air Line-Following Car</span></a>
+        <span class="here" aria-current="page"><span class="fn-when">2024 season</span><span class="fn-title">RoboMaster Engineer — SCARA Arm</span></span>
+      </nav>
+      <div class="footer-end">
+        <a href="index.html" class="back">← All projects</a>
+      </div>
+      <p class="footer-contact">
+      <a href="mailto:krisxiat57@gmail.com">krisxiat57@gmail.com</a>
+      <a href="https://github.com/KrisWonka">github.com/KrisWonka</a>
+      <a href="https://www.linkedin.com/in/kris-xia">linkedin.com/in/kris-xia</a>
+    </p>
+
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ArmY — Grasp-Pose Selection on a 6-DOF Arm — Tian (Kris) Xia</title>
+<meta name="description" content="Perception and grasp-pose selection on a 6-DOF arm: one usable grasp out of a hundred candidates, and why 15/15 detection is not 15/15 grasping.">
+<link rel="canonical" href="https://kriswonka.github.io/army.html">
+<link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+<meta name="theme-color" content="#141a19">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Tian (Kris) Xia">
+<meta property="og:title" content="ArmY — Grasp-Pose Selection on a 6-DOF Arm — Tian (Kris) Xia">
+<meta property="og:description" content="Perception and grasp-pose selection on a 6-DOF arm: one usable grasp out of a hundred candidates, and why 15/15 detection is not 15/15 grasping.">
+<meta property="og:url" content="https://kriswonka.github.io/army.html">
+<meta property="og:image" content="https://kriswonka.github.io/assets/og/army.jpg?v=1788221884">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ArmY — Grasp-Pose Selection on a 6-DOF Arm — Tian (Kris) Xia">
+<meta name="twitter:description" content="Perception and grasp-pose selection on a 6-DOF arm: one usable grasp out of a hundred candidates, and why 15/15 detection is not 15/15 grasping.">
+<meta name="twitter:image" content="https://kriswonka.github.io/assets/og/army.jpg?v=1788221884">
+<link rel="preload" href="assets/fonts/archivo-600-800-latin.woff2?v=1788221884" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/source-serif-4-400-600-latin.woff2?v=1788221884" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css?v=1788221884">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<nav class="sitenav" aria-label="Projects"><div class="wrap">
+  <a href="index.html" class="home">All projects</a>
+  <a href="quadruped.html">Quadruped</a>
+  <a href="slam.html">SLAM</a>
+  <a href="army.html" aria-current="page">ArmY</a>
+  <a href="linefollower.html">Air car</a>
+  <a href="robomaster.html">RoboMaster</a>
+</div></nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow"><b>Senior design capstone</b> · MAE 151A/B, UC Irvine · five-person team · Oct 2025 – Mar 2026</p>
+
+    <div class="hero-grid">
+      <div>
+        <h1>ArmY — Grasp-Pose Selection</h1>
+        <p class="lede">
+          ArmY was our capstone team's attempt at a grocery-shelf picking robot. Mine was
+          <b>the logic that picks one usable grasp out of a hundred candidates, the bridge that puts
+          the camera's point cloud into the arm's own frame, and a GUI an operator can actually
+          drive it from.</b>
+        </p>
+      </div>
+      <figure class="hero-fig">
+        <video preload="auto" src="assets/army/hero_arm.mp4?v=1788221884" poster="assets/army/hero_arm_poster.jpg?v=1788221884" width="880" height="660"
+               autoplay muted loop playsinline controls
+               aria-label="The arm extending across a counter, closing on a small blue block and lifting it clear."></video>
+      </figure>
+    </div>
+
+    <dl class="specs">
+      <div><dt>Target detection</dt><dd>15/15</dd></div>
+      <div><dt>Grasp pose within ±1 cm</dt><dd>7/10</dd></div>
+      <div><dt>Pick cycle time</dt><dd>10–60 s</dd></div>
+    </dl>
+  </div>
+</header>
+
+<main id="main">
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag">Step 1</span>
+      <h2>Choosing one grasp out of a hundred</h2>
+    </div>
+
+    <div class="split">
+      <div class="narrow">
+        <p>
+          To grasp an object, what an arm needs is <b>a pose in space</b> — where to put the jaws,
+          from which direction, and how far to open them.
+        </p>
+        <p>
+          Producing those is the open-source <strong>GPD</strong> library's job: it samples the point
+          cloud and returns a ranked set of candidate gripper poses — a great many on a cluttered
+          scene, plenty of them unusable, driving the gripper through the surface the item rests on
+          or sitting on the ragged fringe of the cloud.
+        </p>
+        <h3>What I added around it</h3>
+        <ul class="plain">
+          <li><b>A reachability box</b> — the stock all sits inside it, and candidates falling outside that conservative box in the arm’s base frame are dropped before anything else is considered; this is what removes most of them</li>
+          <li><b>Ranking</b> — what survives is ordered by the classifier’s own score, with distance to a preferred point as the tie-break</li>
+        </ul>
+      </div>
+
+      <div>
+      <figure>
+        <img src="assets/army/fig_gpd_rviz.jpg?v=1788221884" width="1074" height="805" loading="lazy"
+             alt="RViz on the robot's laptop: a white point cloud of the scanned scene with blue candidate gripper poses generated on it, the GPDPlotGrasps display layer enabled, and a terminal reporting that gpd_grasp has subscribed to /detect_grasps/clustered_grasps.">
+        <figcaption>
+          <b>The white surface is the scanned point cloud; the blue jaws are candidate grasps
+          generated on it.</b>
+        </figcaption>
+      </figure>      </div>
+    </div>
+
+
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag alt">On hardware</span>
+      <h2>Three picks, one pipeline</h2>
+      <span class="phase-sub">different objects, different benches</span>
+    </div>
+
+    <div class="gallery">
+      <figure>
+        <video preload="none" src="assets/army/g_can.mp4?v=1788221884" poster="assets/army/g_can_poster.jpg?v=1788221884" playsinline controls
+               aria-label="The arm descending onto a folding multitool on a granite counter, closing on it, lifting it and setting it down."></video>
+        <figcaption>
+          <b class="surface">Rigid, low-profile</b>
+          A folding multitool lying flat on the counter.
+        </figcaption>
+      </figure>
+      <figure>
+        <video preload="none" src="assets/army/g_tube.mp4?v=1788221884" poster="assets/army/g_tube_poster.jpg?v=1788221884" playsinline controls
+               aria-label="The arm closing on a tapered drink bottle lying on a granite counter, and moving it clear."></video>
+        <figcaption>
+          <b class="surface warm">Irregular, tapered</b>
+          A drink bottle with <b>no flat faces anywhere on it</b>.
+        </figcaption>
+      </figure>
+      <figure>
+        <video preload="none" src="assets/army/g_block.mp4?v=1788221884" poster="assets/army/g_block_poster.jpg?v=1788221884" playsinline controls
+               aria-label="On a lab bench in a different room, the arm descends onto a red block, closes on it, lifts it and sets it down."></video>
+        <figcaption>
+          <b class="surface">New room, new bench</b>
+          A steel lab bench instead of a kitchen counter, under different lighting.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag">Step 2</span>
+      <h2>Making three pieces into one system</h2>
+      <span class="phase-sub">a grasp generator, a moving camera and an arm that have to agree on where things are</span>
+    </div>
+
+    <figure>
+      <video preload="none" src="assets/army/gui.mp4?v=1788221884" poster="assets/army/gui_poster.jpg?v=1788221884" width="1180" height="664" playsinline controls
+             aria-label="A camera recording of a laptop running the operator interface — RGB and depth streams, hand-eye calibration and grasp-tuning sliders, and the GPD candidate-selection window — followed by the arm reaching down and lifting the item off the open bench."></video>
+      <figcaption>
+        Detection, candidate selection and the pick, <b>end to end with no intervention</b>.
+      </figcaption>
+    </figure>
+
+    <div class="split" style="--cols:1.2fr .8fr;margin-top:2.4rem">
+      <div class="narrow">
+        <p>
+          <b>I made three pieces that were never built for each other behave as one system:</b> an
+          open-source grasp generator, a depth camera on the wrist, and the arm's own control
+          interface.
+        </p>
+        <p>
+          <b>The point-cloud bridge is where that is settled.</b> GPD is written for a camera on a
+          fixed mount, watching the scene from outside while the arm moves through it. Ours is the
+          other arrangement — <b>the depth camera is bolted to the wrist, directly above the jaws</b>
+          — so there is no fixed camera-to-base extrinsic to write down, and the frame the cloud
+          arrives in is a different one after every joint move.
+        </p>
+        <p>
+          <b>That breaks an assumption GPD never states, because with a fixed camera it never has
+          to.</b> It crops with a plain box of metres — −0.05 to 0.36 m out from the base,
+          ±0.30 m across, −0.05 to 0.40 m up — which describes the space above the table
+          <em>only if the cloud is in the arm's base frame</em>. Ours arrives wrist-relative, so the
+          box cuts a volume out of a different wrong place after every joint move. Every cloud is
+          therefore pulled through the live TF tree into <code>base_link</code> first, downsampled on
+          the way. Get it wrong and nothing errors: the arm reaches confidently for a place that is
+          not there.
+        </p>
+        <p>
+          <b>We could have run GPD first and transformed afterwards</b>, throwing away whatever
+          landed outside the crop box — moving the pose GPD hands back is far cheaper than moving the
+          cloud, a handful of poses against a few hundred thousand points. <b>We still transform the
+          whole cloud into <code>base_link</code> first.</b> The crop box takes effect before the data
+          reaches GPD, so on an untransformed cloud GPD generates a great many candidates outside the
+          box, and <b>those can score high enough to crowd out the ones actually on the item</b>.
+          That is what we hit in testing.
+        </p>
+        <p>
+          Around it sits the node that takes the chosen candidate to the team's IK and MoveIt 2
+          service, and a PyQt5 panel keeping hand-eye calibration, exposure and grasp offsets
+          adjustable while the arm runs — so an experiment costs a slider instead of a rebuild.
+        </p>
+      </div>
+      <div class="narrow">
+        <h3>Verification I owned</h3>
+        <p>The perception and grasp requirements were mine to test. What passed:</p>
+        <ul class="plain">
+          <li><b>Object detection</b> — <b>15/15</b> across the baseline and cluttered sets, against distractors and partial occlusion</li>
+          <li><b>Grasp sequence automation</b> — detection through to extraction; the operator only clicks the item they want</li>
+        </ul>
+        <h3>And what did not</h3>
+        <p>
+          Position accuracy is the one that matters, and the one that failed: the estimate had to
+          stay within <strong>± 1.0 cm</strong> for 95% of samples, and did so for
+          <strong>7 of 10</strong>. <b>Pick cycle time</b> landed at <strong>10–60 s</strong>
+          against a &lt; 45 s budget.
+        </p>
+        <p class="scope" style="border-color:var(--inflation)">
+          <b>15/15 detection is not 15/15 grasping</b>: the system almost always sees the item, and
+          still does not always know where it is well enough to grasp it cleanly. <b>The limit is the
+          depth camera</b> — a grasp pose is only as accurate as the surface it was fitted to, and the
+          camera's own precision leaves this cloud ragged at its edges.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag plain">Scope</span>
+      <h2>What I actually did</h2>
+    </div>
+
+    <div class="split">
+      <div class="narrow">
+        <p class="scope">
+          ArmY was a <b>five-person team</b>. The mechanical design, the motion-planning line and the
+          electrical work were teammates’. <b>Mine</b> was the grasp pipeline: the grasp-selection
+          node, the point-cloud bridge, the operator interface, and the verification above.
+        </p>
+        <p class="scope" style="border-color:var(--inflation)">
+          The grasp-candidate generator is <b>not mine either</b> — it is the open-source
+          <a href="https://github.com/atenpas/gpd">GPD</a> library, sitting in the tree unchanged.
+          What I wrote is everything around it that makes it run on this arm.
+        </p>
+        <p class="scope" style="border-color:var(--free-faint)">
+          And what the project did <b>not</b> get to: <b>shelf-aware obstacle avoidance never reached
+          a working state</b>. The picks here are in open scenes and on a rack, not reaching past
+          neighbouring stock inside a confined bay — <b>the grasp pipeline is the part that works</b>.
+        </p>
+        <p>
+          Sponsor: Prof. Solmaz Kia. Advisors: Prof. Mark Walter and Prof. David Copp.
+          Submitted as the UC Irvine degree capstone for MAE 151A/B.
+        </p>
+      </div>
+
+      <figure>
+        <img src="assets/army/fig_subsystems.jpg?v=1788221884" width="1024" height="559" loading="lazy"
+             alt="The project’s structural decomposition: six subsystems covering simulation, perception, low-level driver and ROS, kinematics and motion planning, hardware modification and calibration, and visual servoing and integration.">
+        <figcaption>
+          The project as the team divided it. My work sat in the perception column and the
+          integration column on the right.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+      <nav class="footnav" aria-label="All projects">
+        <a href="quadruped.html"><span class="fn-when">Jul – Aug 2026</span><span class="fn-title">Quadruped Fall Recovery</span></a>
+        <a href="slam.html"><span class="fn-when">Jan – May 2026</span><span class="fn-title">SLAM Walking Robot</span></a>
+        <span class="here" aria-current="page"><span class="fn-when">Oct 2025 – Mar 2026</span><span class="fn-title">ArmY — Grasp-Pose Selection</span></span>
+        <a href="linefollower.html"><span class="fn-when">Spring 2025</span><span class="fn-title">Compressed-Air Line-Following Car</span></a>
+        <a href="robomaster.html"><span class="fn-when">2024 season</span><span class="fn-title">RoboMaster Engineer — SCARA Arm</span></a>
+      </nav>
+      <div class="footer-end">
+        <a href="https://github.com/KrisWonka/army-gpd">Code on GitHub →</a>
+        <a href="index.html" class="back">← All projects</a>
+      </div>
+      <p class="footer-contact">
+      <a href="mailto:krisxiat57@gmail.com">krisxiat57@gmail.com</a>
+      <a href="https://github.com/KrisWonka">github.com/KrisWonka</a>
+      <a href="https://www.linkedin.com/in/kris-xia">linkedin.com/in/kris-xia</a>
+    </p>
+
+  </div>
+</footer>
+
+<script>
+// 一页里自动播放的视频一多，浏览器就会拒绝其中一部分。改成滚到视野里才播、
+// 离开就暂停：既绕开这个限制，也省掉看不见的解码开销。
+(function () {
+  var vids = [].slice.call(document.querySelectorAll('video[autoplay]'));
+  if (!vids.length) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  vids.forEach(function (v) { v.removeAttribute('autoplay'); v.pause(); });
+  if (reduce) { vids.forEach(function (v) { v.setAttribute('controls', ''); }); return; }
+  if (!('IntersectionObserver' in window)) { vids.forEach(function (v) { v.play().catch(function(){}); }); return; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.play().catch(function () { e.target.setAttribute('controls', ''); }); }
+      else { e.target.pause(); }
+    });
+  }, { rootMargin: '200px 0px', threshold: 0.15 });
+  vids.forEach(function (v) { io.observe(v); });
+})();
+</script>
+</body>
+</html>

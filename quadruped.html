@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quadruped Fall Recovery — Tian (Kris) Xia</title>
+<meta name="description" content="A fall-recovery RL policy retrained and deployed on a physical XGO mini2s quadruped. From 174° supine back onto its feet in about two seconds.">
+<link rel="canonical" href="https://kriswonka.github.io/quadruped.html">
+<link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+<meta name="theme-color" content="#141a19">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Tian (Kris) Xia">
+<meta property="og:title" content="Quadruped Fall Recovery — Tian (Kris) Xia">
+<meta property="og:description" content="A fall-recovery RL policy retrained and deployed on a physical XGO mini2s quadruped. From 174° supine back onto its feet in about two seconds.">
+<meta property="og:url" content="https://kriswonka.github.io/quadruped.html">
+<meta property="og:image" content="https://kriswonka.github.io/assets/og/quadruped.jpg?v=1788221884">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Quadruped Fall Recovery — Tian (Kris) Xia">
+<meta name="twitter:description" content="A fall-recovery RL policy retrained and deployed on a physical XGO mini2s quadruped. From 174° supine back onto its feet in about two seconds.">
+<meta name="twitter:image" content="https://kriswonka.github.io/assets/og/quadruped.jpg?v=1788221884">
+<link rel="preload" href="assets/fonts/archivo-600-800-latin.woff2?v=1788221884" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/source-serif-4-400-600-latin.woff2?v=1788221884" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css?v=1788221884">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<nav class="sitenav" aria-label="Projects"><div class="wrap">
+  <a href="index.html" class="home">All projects</a>
+  <a href="quadruped.html" aria-current="page">Quadruped</a>
+  <a href="slam.html">SLAM</a>
+  <a href="army.html">ArmY</a>
+  <a href="linefollower.html">Air car</a>
+  <a href="robomaster.html">RoboMaster</a>
+</div></nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow"><b>Research intern</b> · Student Innovation Center (SEI-LAB), Shanghai Jiao Tong University · Jul–Aug 2026</p>
+
+    <div class="hero-grid">
+      <div>
+        <h1>Quadruped Fall Recovery</h1>
+        <p class="lede">
+          Two policies for an XGO mini2s quadruped — walking, and getting up after a fall —
+          retrained in simulation and put on the physical machine. Training was the easy half. The
+          hard half came from the vendor stack lagging its own hardware: <b>finding every place where
+          the real machine and its firmware disagreed with the official model</b> — a chassis 216 g
+          heavier than the one in simulation, and an attitude estimator that could not represent
+          lying on its back.
+        </p>
+      </div>
+      <figure class="hero-fig">
+        <video preload="auto" src="assets/quadruped/hero_walk.mp4?v=1788221884" poster="assets/quadruped/hero_walk_poster.jpg?v=1788221884" width="600" height="800"
+               autoplay muted loop playsinline controls
+               aria-label="The quadruped walking on a tiled floor, kicked onto its back twice by a shoe, and righting itself each time."></video>
+      </figure>
+    </div>
+
+    <dl class="specs solo">
+      <div>
+        <dt>Supine → on its feet</dt>
+        <dd>1.4–2.1 s<small>10 of 14 logged recoveries · the other 4 stalled at 5.4–10.5 s</small></dd>
+      </div>
+    </dl>
+  </div>
+</header>
+
+<main id="main">
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag">Task 1</span>
+      <h2>First, make it walk</h2>
+      <span class="phase-sub">where the runner and the system ID came from</span>
+    </div>
+
+    <div class="narrow">
+      <p>
+        The lab had two goals: walk, and get up after falling. Walking came first, and built
+        everything the recovery work later depended on. <b>I started by measuring the machine.</b>
+      </p>
+    </div>
+
+    <div class="split" style="--cols:.38fr .62fr;margin-top:2.2rem">
+      <figure>
+        <video preload="none" src="assets/quadruped/walk_only.mp4?v=1788221884" poster="assets/quadruped/walk_only_poster.jpg?v=1788221884" width="600" height="800" playsinline controls
+               aria-label="The quadruped walking a straight line across a tiled floor."></video>
+        <figcaption>Walking a line across the tiles.</figcaption>
+      </figure>
+
+      <div class="dtab" style="margin-top:0">
+      <table>
+        <caption>Measured on the machine, before any tuning</caption>
+        <thead>
+          <tr><th scope="col">&nbsp;</th><th scope="col">Measured</th><th scope="col">Where it was used</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Mass</th>
+            <td data-h="measured"><b>964.8 g</b>, on the bench, as it runs.</td>
+            <td data-h="used">The vendor's model weighs 748.8 g. The difference went in as a back
+              weight at the measured location.</td>
+          </tr>
+          <tr>
+            <th scope="row">Command onset</th>
+            <td data-h="measured"><b>61–70 ms</b> from command to the start of motion (step
+              response).</td>
+            <td data-h="used">Into training as the action delay, so the policy acts early.</td>
+          </tr>
+          <tr>
+            <th scope="row">State stream</th>
+            <td data-h="measured"><b>50 Hz</b>, no jitter, over the 2 Mbaud link.</td>
+            <td data-h="used">The rate the policy runs at, and that every log here was recorded
+              at.</td>
+          </tr>
+          <tr>
+            <th scope="row">Servo top speed</th>
+            <td data-h="measured"><b>644°/s</b>, free run.</td>
+            <td data-h="used">The model's speed ceiling, so training cannot buy a motion the
+              hardware cannot perform.</td>
+          </tr>
+          <tr>
+            <th scope="row">Gain and lag, 1–3 Hz</th>
+            <td data-h="measured"><b>0.60</b> gain, <b>88–104 ms</b> phase lag (sine sweep).</td>
+            <td data-h="used">The simulator's own figures are 0.81 and 163 ms. This pair is also what
+              rules out standing on two legs, below.</td>
+          </tr>
+          <tr>
+            <th scope="row">Gyro bias, at rest</th>
+            <td data-h="measured"><b>−7.5, +7.8, +54.5 °/s</b>. Large, but stable run to run.</td>
+            <td data-h="used">Subtracted at startup. Left in, the attitude estimate turns 54° a
+              second on its own.</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+
+    <div class="narrow" style="margin-top:clamp(2rem,4vw,3rem)">
+      <h3>The walking policy is the vendor's task, trained unchanged</h3>
+      <p>
+        I had hand-built and hand-tuned twenty versions of my own first. On 22 July the vendor
+        published a task written for this exact machine; trained untouched for 1,500 iterations —
+        about eighteen minutes — it walked better than anything I had.
+      </p>
+    </div>
+
+    <div class="narrow" style="margin-top:clamp(2.2rem,4.5vw,3.6rem)">
+      <h3>The runner it shipped with disagreed with the policy</h3>
+      <p>
+        The vendor ships firmware, two exported policies and one deployment runner that opens the
+        serial port, runs the network at 50 Hz and serves a phone joystick. It runs. What it does not
+        do is hand the policy the observations that policy was trained on — the network carries its
+        normalization in the graph and its constants in its metadata, and the runner contradicted
+        both.
+      </p>
+    </div>
+
+    <div class="dtab">
+      <table>
+        <caption>Deployment runner · what the policy was actually being fed</caption>
+        <thead>
+          <tr><th scope="col">&nbsp;</th><th scope="col">The runner did</th><th scope="col">What it should be</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Angular velocity</th>
+            <td data-h="was">Firmware axis order, bias included, scaled by 0.2 — a <b>+54°/s</b>
+              rotation the robot is not doing, arriving every tick.</td>
+            <td data-h="now">Two seconds of bias calibration at startup, axes mapped to the body
+              frame, raw rad/s.</td>
+          </tr>
+          <tr>
+            <th scope="row">Gravity, walking</th>
+            <td data-h="was">Hard-coded <b>[0, 0, −1]</b>: upright and level, whatever the machine
+              was doing.</td>
+            <td data-h="now">The measured vector, from the attitude estimator above.</td>
+          </tr>
+          <tr>
+            <th scope="row">Joint velocity</th>
+            <td data-h="was">A firmware field of unverified units, scaled by 0.2 — so the policy saw
+              it <b>five times too small</b>.</td>
+            <td data-h="now">Differenced from read-back angles, clamped at ±20 rad/s — which also
+              bounds what one bad frame can inject.</td>
+          </tr>
+          <tr>
+            <th scope="row">Default stance</th>
+            <td data-h="was">Arm joint 3 hand-written as <b>70°</b>. The constant is used twice, so
+              the error lands twice.</td>
+            <td data-h="now"><b>77.35°</b> — 1.35 rad, from the official model's own initial
+              state.</td>
+          </tr>
+          <tr>
+            <th scope="row">Recovery command</th>
+            <td data-h="was">Wired to the joystick. Normalization divides that channel by a
+              near-zero σ, so a nudge is amplified about <b>30×</b>.</td>
+            <td data-h="now">Zero. The recovery task trains with all three command ranges pinned at
+              exactly zero.</td>
+          </tr>
+          <tr>
+            <th scope="row">Action clamp</th>
+            <td data-h="was">None. Commands could leave the range the machine can reach.</td>
+            <td data-h="now">Joint limit ∩ actuator range, as in the simulator: thigh ceiling
+              <b>1.57 rad</b>, not the 1.91 the joint allows.</td>
+          </tr>
+          <tr>
+            <th scope="row">Action smoothing</th>
+            <td data-h="was">None, and the RL firmware drops the factory 50 ms interpolator, so
+              targets hit the servos as bare 20 ms steps.</td>
+            <td data-h="now"><b>40% new target, 60% previous</b>, on walking only — righting the
+              machine needs the whole step.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="narrow" style="margin-top:1.9rem">
+      <p class="scope">
+        <b>The exported network is the specification.</b> Anything that disagrees with it is a bug,
+        including the code you were given — and none of these announce themselves. The robot walks
+        either way; it just walks badly, and the policy takes the blame.
+      </p>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag">Fault 1</span>
+      <h2>The robot could not tell it was upside down</h2>
+    </div>
+
+    <figure>
+      <img loading="lazy" decoding="async" src="assets/quadruped/fold.png?v=1788221884" width="1230" height="660"
+           alt="Gravity-z against time through one flip. The gyro-quaternion estimate rises to +0.9, settles to about +0.7, and stays clearly positive for the 1.4 seconds the robot lies on its back; the firmware estimate touches zero at 90 degrees and then falls back to −0.85, reporting standing.">
+      <figcaption>
+        One flip, from the on-robot log. <b>The firmware’s gravity vector never goes positive</b> —
+        it folds at 90° and mirrors back, so for the 1.4 s the robot is genuinely supine it reports
+        an attitude close to standing.
+      </figcaption>
+    </figure>
+
+    <div class="split" style="margin-top:2.4rem">
+      <div class="narrow">
+        <h3>Why it took so long to find</h3>
+        <p>
+          The recovery policy kept doing almost nothing, which looks like a bad policy. It was not.
+          Its observation is the gravity vector, and the vector it was handed said <em>you are
+          already standing</em>.
+        </p>
+        <p>
+          The cause is upstream of the policy and upstream of me. Running RL on this machine means
+          flashing a <b>preliminary firmware, v0.0.1</b>, shipped with the trial package. The factory
+          build reports attitude correctly through the full sphere; this one folds at 90° — and below
+          90° it looks perfect, so nothing in the walking work had ever touched it.
+        </p>
+      </div>
+      <div class="narrow">
+        <h3>The fix</h3>
+        <p>
+          The raw gyro channels are unaffected, so I stopped trusting the firmware's attitude and
+          integrated my own quaternion in the runner: axis remap, a two-second stationary calibration
+          at startup, and a 2%-per-tick pull back toward vertical whenever the robot is standing.
+        </p>
+        <p>
+          Checked by hand across seven held poses, fully inverted included:
+          <strong>0–3° error</strong>.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag alt">Fault 2</span>
+      <h2>The simulated robot was 216 g too light</h2>
+    </div>
+
+    <div class="split">
+      <div class="narrow">
+        <p>
+          The vendor's model weighed 748.8 g; the machine on the bench weighed <strong>965 g</strong>.
+          A policy trained on the light model had been promised a torque-to-weight ratio the real
+          robot only had <strong>77.6%</strong> of — so on hardware it saturated its actuators through
+          the whole motion and never produced the trajectory it had learned.
+        </p>
+        <p>
+          The missing mass went into the model as a back weight at the measured location, and I
+          retrained. Same task, corrected physics — never a gain adjusted to hide a modelling
+          error.
+        </p>
+      </div>
+
+      <figure>
+        <img loading="lazy" decoding="async" src="assets/quadruped/recovery.png?v=1788221884" width="1230" height="600"
+             alt="Body tilt against time for one recovery: it peaks near 160 degrees, holds through a one-second compliant phase, then falls below 20 degrees during a 1.22-second righting motion.">
+        <figcaption>
+          One recovery from the same log; the <b>compliant hold</b> is deliberate, reproducing the
+          one-second settle the policy saw in training. <b>This is one of the ten clean runs.</b>
+          Across all 14 logged recoveries, ten reached standing in 1.4–2.1 s (the righting motion
+          itself 1.1–1.7 s); the other four stalled part-way up and needed 5.4–10.5 s.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag plain">Version log</span>
+      <h2>How the recovery policy got there</h2>
+      <span class="phase-sub">every version, and the parameter that changed in it</span>
+    </div>
+
+    <div class="narrow">
+      <p>
+        The vendor's recovery task produces a policy that gets up, and it is slow. Thirteen rounds of
+        one parameter at a time took the median from <strong>3.62 s to 1.16 s</strong> in simulation,
+        twenty attempts scored after every round, all on the mass-corrected model.
+      </p>
+    </div>
+    <div class="dtab five">
+      <table>
+        <caption>Recovery policy · tuning the vendor's task on the corrected model</caption>
+        <thead>
+          <tr>
+            <th scope="col">&nbsp;</th>
+            <th scope="col">Changed</th>
+            <th scope="col">Why</th>
+            <th scope="col">Measured</th>
+            <th scope="col">What happened</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">G1</th>
+            <td data-h="changed">Official <b>cbf321a</b> unchanged, on the corrected model. Seed 42,
+              4,096 environments, 1,500 iterations.</td>
+            <td data-h="why">Baseline.</td>
+            <td data-h="measured">sim <b>13/20</b> · median <b>3.62&nbsp;s</b> · p90&nbsp;timeout<br>
+              robot n=6 · median 5.65&nbsp;s · 2 reached a stable stand</td>
+            <td data-h="observed">Five stall in the roll from back to side; two overshoot and rock
+              back.</td>
+          </tr>
+          <tr>
+            <th scope="row">G2</th>
+            <td data-h="changed"><b>recovery_progress</b> 10.0 → 20.0</td>
+            <td data-h="why">The only term pointing at turning over — everything else is a penalty,
+              so this is where the ceiling is.</td>
+            <td data-h="measured">sim <b>15/20</b> · median <b>3.18&nbsp;s</b> · p90 7.4&nbsp;s</td>
+            <td data-h="observed">Reward hacking: it snaps its head up without planting a foot.</td>
+          </tr>
+          <tr>
+            <th scope="row">G3</th>
+            <td data-h="changed"><b>pose.gravity_z_threshold</b> −0.75 → −0.55</td>
+            <td data-h="why">The stance reward only opened below <b>41°</b> of tilt, leaving 40–90°
+              with no gradient. The gate moves to <b>57°</b>.</td>
+            <td data-h="measured">sim <b>17/20</b> · median <b>2.82&nbsp;s</b> · p90 6.3&nbsp;s</td>
+            <td data-h="observed">⭐ Cured G2's reward hacking.</td>
+          </tr>
+          <tr>
+            <th scope="row">G4</th>
+            <td data-h="changed"><b>joint_vel_l2</b> −3e-2 → −1.5e-2</td>
+            <td data-h="why">Turning over runs on leg momentum, and this penalty caps exactly that
+              peak.</td>
+            <td data-h="measured">sim <b>18/20</b> · median <b>2.44&nbsp;s</b> · p90 5.0&nbsp;s</td>
+            <td data-h="observed">Enough swing — but <b>40% more</b> high-frequency chatter on
+              landing.</td>
+          </tr>
+          <tr>
+            <th scope="row">G5</th>
+            <td data-h="changed"><b>action_rate_l2</b> −0.2 → −0.35</td>
+            <td data-h="why">Velocity penalty caps amplitude, rate penalty caps frequency. Loosen
+              one, tighten the other.</td>
+            <td data-h="measured">sim <b>18/20</b> · median <b>2.29&nbsp;s</b> · p90 4.3&nbsp;s</td>
+            <td data-h="observed">Chatter back down, speed kept.</td>
+          </tr>
+          <tr>
+            <th scope="row">G6</th>
+            <td data-h="changed">Birth-pose curriculum added: roll and pitch <b>±60° → ±180°</b>,
+              widened over the first 400 iterations.</td>
+            <td data-h="why">The official config calls <b>curriculum.clear()</b>: fully random from
+              iteration 0, so the hardest supine cases drown in easy ones.</td>
+            <td data-h="measured">sim <b>20/20</b> · median <b>1.86&nbsp;s</b> · p90 3.0&nbsp;s<br>
+              robot n=8 · median 2.90&nbsp;s · 5 of 8 stable</td>
+            <td data-h="observed">⭐ Largest single gain in the whole log.</td>
+          </tr>
+          <tr>
+            <th scope="row">G7</th>
+            <td data-h="changed"><b>episode_length_s</b> 8.0 → 5.0</td>
+            <td data-h="why">In eight seconds it can grind its way up and still score — time
+              pressure was never in the objective.</td>
+            <td data-h="measured">sim <b>20/20</b> · median <b>1.63&nbsp;s</b> · p90 2.6&nbsp;s</td>
+            <td data-h="observed">—</td>
+          </tr>
+          <tr class="bad">
+            <th scope="row">G8</th>
+            <td data-h="changed"><b>entropy_coef</b> 0.01 → 0.005, <b>init_std</b> 2.0 → 1.5</td>
+            <td data-h="why">Wanted less exploration noise and a crisper motion.</td>
+            <td data-h="measured">sim <b>17/20</b> · median <b>2.05&nbsp;s</b> · p90 4.8&nbsp;s</td>
+            <td data-h="observed">❌ <b>26% slower</b>. Rolled back: it converges early on a
+              conservative solution, action amplitude −22%.</td>
+          </tr>
+          <tr>
+            <th scope="row">G9</th>
+            <td data-h="changed"><b>num_steps_per_env</b> 24 → 48</td>
+            <td data-h="why">A 5&nbsp;s episode is 250 steps; a 24-step rollout sees a tenth of it,
+              so the value estimate is biased.</td>
+            <td data-h="measured">sim <b>20/20</b> · median <b>1.47&nbsp;s</b> · p90 2.3&nbsp;s</td>
+            <td data-h="observed">p90 tightens visibly.</td>
+          </tr>
+          <tr>
+            <th scope="row">G10</th>
+            <td data-h="changed"><b>gamma</b> 0.993 → 0.997</td>
+            <td data-h="why">0.993 is a horizon of about <b>143 steps</b>, shorter than one
+              250-step episode — it cannot see the end of its own motion.</td>
+            <td data-h="measured">sim <b>20/20</b> · median <b>1.39&nbsp;s</b> · p90 2.14&nbsp;s<br>
+              robot n=10 · median 2.17&nbsp;s · 7 of 10 stable</td>
+            <td data-h="observed">—</td>
+          </tr>
+          <tr>
+            <th scope="row">G11</th>
+            <td data-h="changed"><b>pose.std_standing</b>: arm_calf 1.0 → 0.5, arm_thigh 0.25 →
+              0.20</td>
+            <td data-h="why">A std of 1.0 is barely a constraint. Replay showed the arm overswinging
+              and pushing the body back down.</td>
+            <td data-h="measured">sim <b>20/20</b> · median <b>1.27&nbsp;s</b> · p90 1.94&nbsp;s</td>
+            <td data-h="observed">Arm overshoot gone.</td>
+          </tr>
+          <tr>
+            <th scope="row">G12</th>
+            <td data-h="changed"><b>angular_momentum</b> −0.2 → −0.35, threshold −0.4 → −0.2</td>
+            <td data-h="why">Fast now, so it began overshooting and rocking back. The gate moves
+              from <b>66° to 78°</b>: penalty on the finish, not the swing.</td>
+            <td data-h="measured">sim <b>20/20</b> · median <b>1.20&nbsp;s</b> · p90 1.80&nbsp;s</td>
+            <td data-h="observed">Landing overshoot <b>12° → 4°</b>.</td>
+          </tr>
+          <tr class="win">
+            <th scope="row">G13</th>
+            <td data-h="changed">Seed sweep 42 / 43 / 44, best median.</td>
+            <td data-h="why">Seed lottery — the spread at one fixed configuration is not negligible:
+              1.16 / 1.24 / 1.37&nbsp;s.</td>
+            <td data-h="measured">sim <b>20/20</b> · median <b>1.16&nbsp;s</b> · p90 1.74&nbsp;s<br>
+              robot n=14 · median <b>1.92&nbsp;s</b>; ten of them <b>1.4–2.1&nbsp;s</b> (median 1.81&nbsp;s), four
+              stalled 5.36–10.46&nbsp;s</td>
+            <td data-h="observed">Delivered. This is the policy in every clip on this page.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="narrow" style="margin-top:1.6rem">
+      <p class="note">
+        Everything else is the vendor's, untouched: the PPO body, the contact-friction randomization,
+        the termination conditions, the 0.25 action scale — ten parameters moved in total. The robot
+        rows are 50 Hz on-robot logs, segmented from peak tilt to the first sample below 25°.
+      </p>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag plain">Result</span>
+      <h2>Same policy, two floors it never trained on</h2>
+    </div>
+
+    <div class="narrow">
+      <p>
+        Neither floor exists in the simulator — what the policy saw was a range of randomized
+        friction and body-contact parameters, so this is domain randomization paying off, not a demo
+        tuned per venue. These two clips sit near opposite ends of the range the same weights cover.
+      </p>
+    </div>
+
+    <div class="compare">
+      <figure>
+        <video preload="none" src="assets/quadruped/getup_tile.mp4?v=1788221884" poster="assets/quadruped/getup_tile_poster.jpg?v=1788221884" playsinline controls
+               aria-label="On smooth tile: the robot is flipped onto its back and recovers."></video>
+        <figcaption>
+          <b class="surface">Polished tile · low friction</b>
+          The feet slip, so the righting motion has to work against a floor that gives nothing back.
+        </figcaption>
+      </figure>
+      <figure>
+        <video preload="none" src="assets/quadruped/getup_grass.mp4?v=1788221884" poster="assets/quadruped/getup_grass_poster.jpg?v=1788221884" playsinline controls
+               aria-label="On artificial turf: the same policy recovers from being flipped."></video>
+        <figcaption>
+          <b class="surface warm">Artificial turf · high friction, compliant</b>
+          The surface grips and deforms under the body. Same network, no retraining, no parameter change.
+        </figcaption>
+      </figure>
+    </div>
+
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag plain">Negative result</span>
+      <h2>The bipedal variant does not work, and here is the proof</h2>
+    </div>
+
+    <div class="split">
+      <div class="narrow">
+        <p>
+          The obvious next ask was standing on two legs, and torque was never the constraint — the
+          task uses <strong>13% of the actuator ceiling</strong>. Time is. An inverted pendulum this
+          size has a <strong>136 ms</strong> characteristic time against the machine's own
+          <strong>88–104 ms</strong> phase lag at 1–3 Hz. You cannot stabilize a correction that
+          arrives that late.
+        </p>
+        <p>
+          Rather than argue about it, I ran one decisive experiment: identical training, one variable
+          changed. At 8000 iterations the real-latency run reached an uprightness of
+          <strong>0.56</strong>; the low-latency run reached <strong>0.95</strong>.
+        </p>
+        <p class="scope">
+          That is a <b>physics limit on this hardware, not a tuning problem</b>, and it was reported
+          as such. Knowing when to stop is part of the job.
+        </p>
+      </div>
+
+      <figure>
+        <img loading="lazy" decoding="async" src="assets/quadruped/biped_nogo.png?v=1788221884" width="1050" height="769"
+             alt="Top: a bar showing the 136 ms pendulum time constant with the 88 to 104 ms command lag filling most of it. Bottom: uprightness of 0.56 at real latency against 0.95 at low latency.">
+        <figcaption>
+          The lag eats most of the window the controller has to act in — and the experiment agrees
+          with the arithmetic.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+      <h2>What I actually did</h2>
+      <div class="split" style="--cols:1fr 1.05fr;margin-top:1.4rem">
+        <div>
+        <p class="scope">
+      The walking and recovery <b>task configurations are the vendor’s open-source work</b>
+      (LuwuDynamics, mjlab / MuJoCo Warp), as is the deployment runner I started from.
+      <b>Mine</b> is the mass correction and retrain, the system identification, the rewrite of
+      that runner — observation contract, state machine, attitude estimator, safety layer — and
+      the bipedal negative result.
+    </p>
+        <p class="note">Code not public — the working tree contains vendor-licensed material.</p>
+        </div>
+        <div>
+        <ul class="plain">
+      <li><b>Trained</b> — walking and fall-recovery policies with RSL-RL across 4,096 parallel environments, exported to ONNX</li>
+      <li><b>Measured</b> — 50 Hz on-robot telemetry: attitude, joint angles and velocities, targets,
+        actions. Every recovery timing and attitude trace here comes out of those logs; the mass,
+        latency and servo-speed figures come from the bench characterization named beside them, and
+        the uprightness figures from the simulator</li>
+      <li><b>Deployed</b> — the runner on the physical machine. Every clip on this page is a real
+        run under it, not a simulator playback</li>
+    </ul>
+        </div>
+      </div>
+    </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+      <nav class="footnav" aria-label="All projects">
+        <span class="here" aria-current="page"><span class="fn-when">Jul – Aug 2026</span><span class="fn-title">Quadruped Fall Recovery</span></span>
+        <a href="slam.html"><span class="fn-when">Jan – May 2026</span><span class="fn-title">SLAM Walking Robot</span></a>
+        <a href="army.html"><span class="fn-when">Oct 2025 – Mar 2026</span><span class="fn-title">ArmY — Grasp-Pose Selection</span></a>
+        <a href="linefollower.html"><span class="fn-when">Spring 2025</span><span class="fn-title">Compressed-Air Line-Following Car</span></a>
+        <a href="robomaster.html"><span class="fn-when">2024 season</span><span class="fn-title">RoboMaster Engineer — SCARA Arm</span></a>
+      </nav>
+      <div class="footer-end">
+        <a href="index.html" class="back">← All projects</a>
+      </div>
+      <p class="footer-contact">
+      <a href="mailto:krisxiat57@gmail.com">krisxiat57@gmail.com</a>
+      <a href="https://github.com/KrisWonka">github.com/KrisWonka</a>
+      <a href="https://www.linkedin.com/in/kris-xia">linkedin.com/in/kris-xia</a>
+    </p>
+
+  </div>
+</footer>
+
+<script>
+// 一页里自动播放的视频一多，浏览器就会拒绝其中一部分。改成滚到视野里才播、
+// 离开就暂停：既绕开这个限制，也省掉看不见的解码开销。
+(function () {
+  var vids = [].slice.call(document.querySelectorAll('video[autoplay]'));
+  if (!vids.length) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  vids.forEach(function (v) { v.removeAttribute('autoplay'); v.pause(); });
+  if (reduce) { vids.forEach(function (v) { v.setAttribute('controls', ''); }); return; }
+  if (!('IntersectionObserver' in window)) { vids.forEach(function (v) { v.play().catch(function(){}); }); return; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.play().catch(function () { e.target.setAttribute('controls', ''); }); }
+      else { e.target.pause(); }
+    });
+  }, { rootMargin: '200px 0px', threshold: 0.15 });
+  vids.forEach(function (v) { io.observe(v); });
+})();
+</script>
+</body>
+</html>

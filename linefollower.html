@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compressed-Air Line-Following Car — Tian (Kris) Xia</title>
+<meta name="description" content="A line-following car with no drive motor: a compressed-air piston engine I designed, and an algorithm that rebuilds the lane the camera cannot see.">
+<link rel="canonical" href="https://kriswonka.github.io/linefollower.html">
+<link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+<meta name="theme-color" content="#141a19">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Tian (Kris) Xia">
+<meta property="og:title" content="Compressed-Air Line-Following Car — Tian (Kris) Xia">
+<meta property="og:description" content="A line-following car with no drive motor: a compressed-air piston engine I designed, and an algorithm that rebuilds the lane the camera cannot see.">
+<meta property="og:url" content="https://kriswonka.github.io/linefollower.html">
+<meta property="og:image" content="https://kriswonka.github.io/assets/og/linefollower.jpg?v=1788221884">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Compressed-Air Line-Following Car — Tian (Kris) Xia">
+<meta name="twitter:description" content="A line-following car with no drive motor: a compressed-air piston engine I designed, and an algorithm that rebuilds the lane the camera cannot see.">
+<meta name="twitter:image" content="https://kriswonka.github.io/assets/og/linefollower.jpg?v=1788221884">
+<link rel="preload" href="assets/fonts/archivo-600-800-latin.woff2?v=1788221884" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/source-serif-4-400-600-latin.woff2?v=1788221884" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css?v=1788221884">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<nav class="sitenav" aria-label="Projects"><div class="wrap">
+  <a href="index.html" class="home">All projects</a>
+  <a href="quadruped.html">Quadruped</a>
+  <a href="slam.html">SLAM</a>
+  <a href="army.html">ArmY</a>
+  <a href="linefollower.html" aria-current="page">Air car</a>
+  <a href="robomaster.html">RoboMaster</a>
+</div></nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow"><b>MAE 106 Mechanical Systems Laboratory</b> · UC Irvine · seven-person team · Spring 2025</p>
+
+    <div class="hero-grid">
+      <div>
+        <h1>Compressed-Air Line-Following Car</h1>
+        <p class="lede">
+          A compressed-air piston engine turns the wheels, and a camera and a grayscale sensor have
+          to find the lane on their own. I owned both ends of that — <b>the pneumatic powertrain,
+          the grayscale sensor, and an
+          eight-neighbourhood border tracer run from both ends of the frame</b>, so that a lane broken
+          by a crossing or by worn paint still leaves a continuous centerline for the steering angle
+          to be measured off.
+        </p>
+      </div>
+      <figure class="hero-fig">
+        <img loading="lazy" decoding="async" src="assets/linefollower/car.jpg?v=1788221884" width="825" height="1100"
+             style="object-position:center bottom"
+             alt="The car on the test track: a low carbon-fiber chassis with a single tall support column, a scooter tire slid over the top of that column serving as the air store, air lines running down it, and a black painted lane curving across the white floor.">
+      </figure>
+    </div>
+
+    <dl class="specs">
+      <div><dt>Distance on one fill</dt><dd>62.3 m<small>measured · 86% of the 72.67 m the air should give</small></dd></div>
+      <div><dt>Lane reconstruction</dt><dd>94%<small>100 real-world frames · within 5 px</small></dd></div>
+      <div><dt>Vision throughput</dt><dd>45 fps<small>188 × 120, CPU only, no GPU</small></dd></div>
+    </dl>
+  </div>
+</header>
+
+<main id="main">
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag">Part 1</span>
+      <h2>An engine that runs on nothing but stored air</h2>
+      <span class="phase-sub">bench test — cylinder, crank, flywheel</span>
+    </div>
+
+    <div class="split">
+      <figure>
+        <video preload="auto" src="assets/linefollower/engine.mp4?v=1788221884" poster="assets/linefollower/engine_poster.jpg?v=1788221884"
+               width="1180" height="664"
+               autoplay muted loop playsinline controls
+               aria-label="Bench test of the pneumatic engine: an air line feeds a small cylinder whose piston drives a connecting rod and crank, spinning a flywheel."></video>
+        <figcaption>
+          The engine on the bench, off the car. <b>Air in on the left, then piston, connecting rod,
+          crank, flywheel on the right</b> — the whole conversion from stored pressure to rotation.
+        </figcaption>
+      </figure>
+      <figure>
+        <video preload="none" src="assets/linefollower/cad_reversing.mp4?v=1788221884" poster="assets/linefollower/cad_reversing_poster.jpg?v=1788221884"
+               width="640" height="360" playsinline controls
+               aria-label="A CAD motion study of the reciprocating engine — cylinder, crosshead, connecting rod and crank — animated through a full cycle."></video>
+        <figcaption>
+          The same mechanism as a <b>CAD motion study</b> — this is how the geometry was checked
+          before anything was cut.
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="split" style="margin-top:2.4rem">
+      <div class="narrow">
+        <h3>The air path, end to end</h3>
+        <p>
+          <b>A 5 L tyre charged to 2 bar is the whole tank.</b> Air passes a
+          <strong>2-position 5-port hand-lever valve</strong> mounted directly above the cylinder —
+          supply in, two ports out to the cylinder's opposite chambers, two exhausts. Pulling or
+          pushing its rod swaps which chamber is pressurized and which is venting.
+        </p>
+        <p>
+          <b>That rod is not left to a hand.</b> A bracket ties it to the piston rod, so the piston's
+          own travel drags the valve across at the end of each stroke and reverses the air path on
+          itself. <b>The cylinder reciprocates unattended, and the eccentric turns.</b>
+        </p>
+        <p>
+          The cylinder is <strong>20 mm bore × 45 mm stroke</strong>. Its piston drives a connecting
+          rod and crank, and the crank drives the wheel through a <strong>2GT belt on two 60-tooth
+          pulleys — 1:1</strong>, chosen for the tooth profile because backlash here shows up as lost
+          stroke. <b>One full out-and-back cycle turns the wheel exactly once.</b>
+        </p>
+
+      </div>
+
+      <div class="narrow">
+        <h3>What it actually returned</h3>
+        <p>
+          Expanding 5 L from 2 bar down to 0.3 bar through that cylinder, against a 10 cm wheel,
+          works out to <strong>72.67 m</strong>. The car ran <strong>62.3 m</strong>.
+        </p>
+
+        <h3>The rest of the chassis</h3>
+        <ul class="plain">
+          <li><b>A single column carrying the tyre, not four</b> — the load goes down one centered
+            path, which cut mass and left the deck clear for the air lines</li>
+          <li><b>Parallelogram steering</b> — a servo at the center of the chassis drives both front
+            wheels through a parallelogram linkage</li>
+          <li><b>Carbon-fiber deck</b>, cut with large openings — the car has to move on a fixed and
+            very small energy budget, so every gram is a meter</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag alt">Part 2</span>
+      <h2>Rebuilding the lane where it disappears</h2>
+      <span class="phase-sub">bidirectional 8-neighborhood tracing · Kalman-smoothed reconstruction</span>
+    </div>
+
+    <figure>
+      <video preload="none" src="assets/linefollower/track.mp4?v=1788221884" poster="assets/linefollower/track_poster.jpg?v=1788221884"
+             width="1180" height="664" playsinline controls
+             aria-label="The car driving itself around a black painted lane on a white lab floor, following the curve unaided."></video>
+      <figcaption>
+        The <b>RealSense</b> is clamped to the chassis at wheel height in a ring bracket, angled down
+        at the floor ahead.
+      </figcaption>
+    </figure>
+
+    <div class="split" style="margin-top:2.4rem">
+      <div class="narrow">
+        <h3>The problem, and the result</h3>
+        <p>
+          The centerline is one pixel per row, and the steering angle is the mean of those over the
+          <b>bottom 15 rows</b>, at about 0.4° per pixel — fifteen pixels are the only thing the car
+          steers on. And a lane is not continuous: crossings break it by design, worn paint by
+          accident.
+        </p>
+        <p>
+          A conventional tracer, walking upward from the bottom, stops at the first break. Worse, when the break
+          sits low the pass never gets going and the centerline collapses to a vertical line down the
+          middle — which the angle calculation reads as <b>a perfectly straight road</b>, at the
+          moment the car is on a broken one.
+        </p>
+        <p>
+          On the right is the whole point of the method, before any of the mechanism: frames that a
+          single-direction tracer gives up on, and <b>the centerline carried straight across the
+          crossing</b>.
+        </p>
+
+        <h3>Getting a clean binary first</h3>
+        <p>
+          Grayscale frame, <strong>5 × 5 Gaussian blur</strong>, histogram equalization, then
+          <strong>Otsu's method</strong> — plus a hand-tunable bias on top of Otsu's answer. Raising
+          it closes gaps, lowering it sharpens the lane but lets noise in. <b>That one knob does most
+          of the work of adapting to a new floor.</b>
+        </p>
+      </div>
+
+      <figure class="paper">
+        <img src="assets/linefollower/fig_crossings.jpg?v=1788221884" width="506" height="581" loading="lazy"
+             alt="Four rows, two columns. Left: original grayscale frames — the top one a clean uninterrupted lane as the control case, the three below it cut through by a crossing. Right: the same frames binarized, with a thin centerline running continuously across each break.">
+        <figcaption>
+          <b>Left, what the camera sees. Right, what comes out.</b> Top row is the control case,
+          the three below it are crossings — the case the method was written for.
+        </figcaption>
+      </figure>
+    </div>
+
+    <figure style="margin-top:2.4rem">
+      <img src="assets/linefollower/fig_rerun.jpg?v=1788221884" width="1514" height="480" loading="lazy"
+           alt="Left: the original frame in which the lane has worn away into two separate patches with a wide gap between them. Right: the algorithm's own binarized view of the same frame, with the reconstructed centerline drawn in pink running down the upper patch, across the gap, and on down the lower patch.">
+      <figcaption>
+        A harder case: the lane is <b>worn through</b>, leaving two patches and nothing between.
+        <b>Left the frame, right the binarization</b>, reconstructed centerline in pink — traced down
+        the upper patch, carried across, picked up again below.
+      </figcaption>
+    </figure>
+
+    
+
+    <div class="split" style="margin-top:2.4rem">
+      <div class="narrow">
+        <h3>Walking the border, twice</h3>
+        <p class="scope">
+          <b>The tracer itself is not mine.</b> Eight-neighborhood border following is a standard
+          technique, and so is the Otsu binarization in front of it. What follows is what I built on
+          top of them.
+        </p>
+        <p>
+          From the <b>center of the bottom row</b>, walk outward until the color flips — one seed on
+          the lane's left edge, one on its right. From each, the tracker scans the eight neighbors in
+          a fixed rotation, and
+          every time the scan crosses into white the last black pixel becomes the next seed.
+          <b>Run once, it stops dead at the first break.</b>
+        </p>
+        <p>
+          So <b>the same routine runs again from the top down</b>, rotations mirrored. Each pass
+          survives until it hits the defect from its own side: the bottom-up trace dies at
+          <strong>y₁</strong>, the top-down at <strong>y₂</strong>, and <b>the band between them is
+          what has to be rebuilt</b>. A break is called on a row-to-row jump of <b>more than 5 px
+          going up, 3 px coming down</b>.
+        </p>
+        <p>
+          Two things the seed search has to survive. A start row with no colour flip makes it
+          <b>step toward the middle, up to 30 rows</b>, rather than give up — give up and y₂ stays
+          &minus;1 and reconstruction never fires. And when the lane sits entirely to one side,
+          scanning outward finds only the near border; the far one is recovered by walking that white
+          run to its end.
+        </p>
+
+        <h3>Filling the gap</h3>
+        <p>
+          Least-squares fit each side to <em>x = ky + b</em> — x as a function of row, so a
+          near-vertical lane stays well-conditioned — on the <strong>10 rows above y₂</strong> and the
+          <strong>10 below y₁</strong>. Extrapolate both across the gap; the centerline is the
+          row-by-row midpoint.
+        </p>
+        <p>
+          <b>Two anchors rather than one, because a single-ended extrapolation lands wherever its
+          slope points</b> — across a wide gap, nowhere near the lane it is meant to rejoin. The two
+          are crossfaded by row index on a <em>t&thinsp;²(3&nbsp;&minus;&nbsp;2t)</em> weight, so the
+          handover happens in the middle. If <b>neither</b> end has two usable rows, the patch is
+          skipped.
+        </p>
+        <p>
+          A <strong>2-state Kalman filter</strong> — position and slope, row index playing the part
+          of time — then runs down the rebuilt segment, predicting each row forward along the current
+          slope before applying its measurement.
+        </p>
+        <p class="scope">
+          <b>Ablated, this stage earns almost nothing.</b> Across six synthetic gap cases, switching
+          the filter off moves mean error from 2.09&nbsp;px to <b>2.05&nbsp;px</b> — marginally
+          <em>better</em> without it, because the span it smooths is already an analytic blend of two
+          straight lines, and the measurement noise it exists to reject was removed one stage earlier.
+        </p>
+        <p class="scope">
+          <b>The second anchor is what actually earns it.</b> Scored row by row against synthetic
+          ground truth across six gap cases — 130 patched rows — extrapolating from the upper fit
+          alone gives <b>3.61&nbsp;px</b> mean and <b>13&nbsp;px</b> worst; using both ends gives
+          <b>2.09</b> and <b>5&nbsp;px</b>. From one end the error accumulates monotonically: the
+          patched line runs 4–5&nbsp;px to the left of the lane, then snaps from column 103 straight
+          back onto the true lane at 108 at the bottom of the band.
+        </p>
+              </div>
+
+      <div class="stick-col">
+       <div class="stick">
+        <figure class="paper" style="margin-top:0">
+          <img src="assets/linefollower/fig_merge.jpg?v=1788221884" width="760" height="487" loading="lazy"
+               alt="A binarized X-shaped junction with the extracted centerline drawn in three colours: blue below the break, green carried across the reconstructed span, red above it.">
+          <figcaption>
+            The three bands, color-coded. <b>Blue is the bottom-up trace at the bottom, red the
+            top-down trace at the top, and green is the reconstructed span</b> — the piece carried
+            straight across the crossing, where the lane's own borders are gone.
+          </figcaption>
+        </figure>
+               </div>
+      </div>
+    </div>
+
+    <div class="plate">
+      <figure>
+        <video src="assets/linefollower/sim_webots.mp4?v=1788221884" poster="assets/linefollower/sim_webots_poster.jpg?v=1788221884"
+               width="900" height="772"
+               autoplay muted loop playsinline preload="metadata"
+               aria-label="A Webots simulation of the car driving a figure-eight track."></video>
+        <figcaption>
+          <b class="surface">The track, in Webots</b>
+          A <b>figure eight</b>.
+        </figcaption>
+      </figure>
+      <figure>
+        <video src="assets/linefollower/sim_vision.mp4?v=1788221884" poster="assets/linefollower/sim_vision_poster.jpg?v=1788221884"
+               width="900" height="740"
+               autoplay muted loop playsinline preload="metadata"
+               aria-label="The binarized camera view with the traced centerline drawn down the lane, over a log printing the sensor array, the computed angle and the steering command."></video>
+        <figcaption>
+          <b class="surface warm">What the perception loop reports</b>
+          The grey line down the middle of the lane is the computed centerline; the log underneath is
+          the per-frame angle and the steering command.
+        </figcaption>
+      </figure>
+    </div>
+
+    <div style="margin-top:2.4rem">
+      <table>
+        <caption>Same 100 real-world frames · 188 × 120</caption>
+        <thead>
+          <tr><th scope="col"><span class="visually-hidden">Metric</span></th><th scope="col">single-direction</th><th scope="col">this method</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Breakpoint recovery</th><td>48%</td><td>94%</td></tr>
+          <tr><th scope="row">Mean positional error</th><td>16.3 px</td><td>2.1 px</td></tr>
+          <tr><th scope="row">Centerline smoothness (σ)</th><td>6.7</td><td>1.6</td></tr>
+          <tr class="pass"><th scope="row">Throughput, CPU only</th><td>—</td><td>45 fps</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag alt">Every case</span>
+      <h2>The algorithm running, case by case</h2>
+      <span class="phase-sub">synthetic camera frames driven through the real C implementation — left is the input, right is what it decides</span>
+    </div>
+
+    <div class="plate">
+      <figure>
+        <video src="assets/linefollower/sim_straight.mp4?v=1788221884" poster="assets/linefollower/sim_straight_poster.jpg?v=1788221884"
+               width="1140" height="382"
+               autoplay muted loop playsinline preload="metadata"
+               aria-label="Straight: a simulated camera view on the left and the binarized frame with the reconstructed centerline on the right."></video>
+        <figcaption>
+          <b class="surface">Straight</b>
+          The control case: nothing to repair, so nothing should be invented.
+        </figcaption>
+      </figure>
+      <figure>
+        <video src="assets/linefollower/sim_curve.mp4?v=1788221884" poster="assets/linefollower/sim_curve_poster.jpg?v=1788221884"
+               width="1140" height="382"
+               autoplay muted loop playsinline preload="metadata"
+               aria-label="Curve: a simulated camera view on the left and the binarized frame with the reconstructed centerline on the right."></video>
+        <figcaption>
+          <b class="surface">Curve</b>
+          A single bend, still unbroken — the reconstruction path should stay out of the way.
+        </figcaption>
+      </figure>
+      <figure>
+        <video src="assets/linefollower/sim_crossing.mp4?v=1788221884" poster="assets/linefollower/sim_crossing_poster.jpg?v=1788221884"
+               width="1140" height="382"
+               autoplay muted loop playsinline preload="metadata"
+               aria-label="Crossing: a simulated camera view on the left and the binarized frame with the reconstructed centerline on the right."></video>
+        <figcaption>
+          <b class="surface">Crossing</b>
+          <b>The lane merges into the crossing bar</b>, so the border trace has no edge left to follow.
+        </figcaption>
+      </figure>
+      <figure>
+        <video src="assets/linefollower/sim_gap_short.mp4?v=1788221884" poster="assets/linefollower/sim_gap_short_poster.jpg?v=1788221884"
+               width="1140" height="382"
+               autoplay muted loop playsinline preload="metadata"
+               aria-label="Short gap: a simulated camera view on the left and the binarized frame with the reconstructed centerline on the right."></video>
+        <figcaption>
+          <b class="surface">Short gap</b>
+          The two passes die from opposite sides; the span between them is what gets rebuilt.
+        </figcaption>
+      </figure>
+      <figure>
+        <video src="assets/linefollower/sim_gap_long.mp4?v=1788221884" poster="assets/linefollower/sim_gap_long_poster.jpg?v=1788221884"
+               width="1140" height="382"
+               autoplay muted loop playsinline preload="metadata"
+               aria-label="Long gap: a simulated camera view on the left and the binarized frame with the reconstructed centerline on the right."></video>
+        <figcaption>
+          <b class="surface">Long gap</b>
+          <b>Twice the gap.</b> Still bridged, but this is where the straight-line bridge starts to show — error roughly doubles.
+        </figcaption>
+      </figure>
+      <figure>
+        <video src="assets/linefollower/sim_scurve.mp4?v=1788221884" poster="assets/linefollower/sim_scurve_poster.jpg?v=1788221884"
+               width="1140" height="382"
+               autoplay muted loop playsinline preload="metadata"
+               aria-label="S-bend: a simulated camera view on the left and the binarized frame with the reconstructed centerline on the right."></video>
+        <figcaption>
+          <b class="surface">S-bend</b>
+          Two reversing curves, no break — the same check as <em>Curve</em>, harder.
+        </figcaption>
+      </figure>
+    </div>
+
+      </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag plain">Part 3</span>
+      <h2>Two sensors that disagree, and which one to believe</h2>
+    </div>
+
+    <div class="compare" style="margin:0 0 2.2rem">
+      <figure>
+        <img loading="lazy" decoding="async" src="assets/linefollower/gray_sensor.jpg?v=1788221884"
+             width="1320" height="1001"
+             alt="The grayscale sensor board photographed at an angle over a black-and-white boundary: one long PCB with eight downward-facing probe housings in a row along its underside, and an I2C header at one end.">
+        <figcaption>
+          <b>The bar itself</b> — eight probes on one board, read over I²C. No lens, no exposure, no
+          frame to process: it reports eight numbers and it reports them immediately.
+        </figcaption>
+      </figure>
+      <figure class="paper">
+        <img loading="lazy" decoding="async" src="assets/linefollower/gray_geometry.png?v=1788221884"
+             width="958" height="862"
+             alt="Plan view of the car on a curving lane. Eight probes are drawn in a row across the nose at −36.5, −27.5, −16.5, −5.5, 5.5, 16.5, 27.5 and 36.5 mm; the four on the right are filled black because the lane passes under them, and the midpoint of those is marked. A vertical line of length y = 100 mm runs back from the bar to a point between the two wheels, and the angle theta between that line and the line to the midpoint is marked in red, with the relation tan theta = x over y.">
+        <figcaption>
+          <b>The whole method in one drawing.</b> x is the midpoint of the probes that see black, y
+          is the fixed 100 mm back to the point between the wheels, and the steer is the angle
+          between them.
+        </figcaption>
+      </figure>
+    </div>
+    <div class="split" style="--cols:1.05fr .95fr">
+      <div class="narrow">
+        <p>
+          The camera is not the only thing watching the lane. An <strong>8-channel grayscale bar</strong>
+          reads over I²C at the car's nose — eight probes at fixed, known positions across the front,
+          spanning <strong>±36.5 mm</strong>. Any probe reading darker than the threshold is over the
+          line.
+        </p>
+        <p>
+          The angle falls out of one piece of geometry: average the positions of the probes seeing
+          black to get where the lane crosses the bar, join that to the turning centre a fixed
+          <strong>100 mm</strong> behind, and the angle of that line is the steer being asked for.
+        </p>
+        <p class="eq">
+          offset = mean { p<sub>i</sub> : g<sub>i</sub> &lt; 170 }<br>
+          θ<sub>gray</sub> = arctan ( offset / 100 mm )
+          <small>p = ±5.5, ±16.5, ±27.5, ±36.5 mm — probe positions across the nose;
+          g<sub>i</sub> is that probe's reading. An arctangent, not a scale factor, because what is
+          measured is the angle of a real line between two points on the car.</small>
+        </p>
+
+        <p>
+          So there are two independent estimates of the same quantity, several times a second, and
+          they do not always agree.
+        </p>
+
+      </div>
+
+      <div class="narrow">
+        <h3>Why not just average them</h3>
+        <p>
+          The obvious answer is a fixed weighting, and that is what I wrote first —
+          <code>0.7 × camera + 0.3 × grayscale</code>, still in the source, commented out. It fails
+          in the case that matters: <b>when one sensor is wrong it drags the other with it, in
+          proportion to a weight chosen before anything went wrong.</b>
+        </p>
+        <p>
+          What shipped keys off <b>disagreement</b> instead:
+        </p>
+        <ul class="plain">
+          <li><b>Within 10° of each other</b> — both are probably fine, take the mean</li>
+          <li><b>Further apart than that</b> — one of them has been fooled, so take the one whose
+            reading <b>changed least since the last frame</b></li>
+        </ul>
+        <p class="scope">
+          The assumption: a sensor that has just jumped is the one that lost the line — to a
+          crossing, glare, or worn paint. Which sensor that is changes moment to moment.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+      <h2>What I actually did</h2>
+      <div class="split" style="--cols:1fr 1.05fr;margin-top:1.4rem">
+        <div>
+        <p class="scope">
+      X-GB was a <b>seven-person team</b> for MAE 106; chassis fabrication and the circuit build were
+      shared. <b>Mine</b> were the two halves this page is about: the pneumatic powertrain and the
+      perception work on top of it. <b>The eight-neighborhood tracer and Otsu binarization are
+      existing techniques</b>; mine is <b>the reconstruction</b> — both-ended tracing, break
+      detection, the fit and extrapolation across the gap, the merge, and the fusion rule.
+    </p>
+        <p class="note">The comparison figures above are against a single-direction baseline I implemented for the
+      purpose; they are not a benchmark against published systems.</p>
+        </div>
+        <div>
+        <ul class="plain">
+      <li><b>Published</b> — I wrote the algorithm up as a <b>sole-authored journal paper</b>:
+        <a href="https://doi.org/10.54254/2755-2721/2025.GL25448">A Bidirectional 8-Neighborhood
+        Border Tracking and Kalman-Based Centerline Reconstruction Method for Line-Following
+        Robots</a>, <em>Applied and Computational Engineering</em> <b>167</b>, 122–129 (2025)</li>
+      <li><b>Implemented</b> — C and C++, CPU only on an embedded Linux board, no GPU and no NPU;
+        the grayscale bar is read over I²C, the camera through OpenCV
+        (<a href="https://github.com/KrisWonka/line-following-car">source</a>)</li>
+      <li><b>Simulated</b> — the perception loop was also exercised in Webots against a rendered track</li>
+    </ul>
+        </div>
+      </div>
+    </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+      <nav class="footnav" aria-label="All projects">
+        <a href="quadruped.html"><span class="fn-when">Jul – Aug 2026</span><span class="fn-title">Quadruped Fall Recovery</span></a>
+        <a href="slam.html"><span class="fn-when">Jan – May 2026</span><span class="fn-title">SLAM Walking Robot</span></a>
+        <a href="army.html"><span class="fn-when">Oct 2025 – Mar 2026</span><span class="fn-title">ArmY — Grasp-Pose Selection</span></a>
+        <span class="here" aria-current="page"><span class="fn-when">Spring 2025</span><span class="fn-title">Compressed-Air Line-Following Car</span></span>
+        <a href="robomaster.html"><span class="fn-when">2024 season</span><span class="fn-title">RoboMaster Engineer — SCARA Arm</span></a>
+      </nav>
+      <div class="footer-end">
+        <a href="https://github.com/KrisWonka/line-following-car">Code on GitHub →</a>
+        <a href="index.html" class="back">← All projects</a>
+      </div>
+      <p class="footer-contact">
+      <a href="mailto:krisxiat57@gmail.com">krisxiat57@gmail.com</a>
+      <a href="https://github.com/KrisWonka">github.com/KrisWonka</a>
+      <a href="https://www.linkedin.com/in/kris-xia">linkedin.com/in/kris-xia</a>
+    </p>
+
+  </div>
+</footer>
+
+<script>
+// 一页里自动播放的视频一多，浏览器就会拒绝其中一部分。改成滚到视野里才播、
+// 离开就暂停：既绕开这个限制，也省掉看不见的解码开销。
+(function () {
+  var vids = [].slice.call(document.querySelectorAll('video[autoplay]'));
+  if (!vids.length) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  vids.forEach(function (v) { v.removeAttribute('autoplay'); v.pause(); });
+  if (reduce) { vids.forEach(function (v) { v.setAttribute('controls', ''); }); return; }
+  if (!('IntersectionObserver' in window)) { vids.forEach(function (v) { v.play().catch(function(){}); }); return; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.play().catch(function () { e.target.setAttribute('controls', ''); }); }
+      else { e.target.pause(); }
+    });
+  }, { rootMargin: '200px 0px', threshold: 0.15 });
+  vids.forEach(function (v) { io.observe(v); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SLAM Walking Robot — Tian (Kris) Xia</title>
+<meta name="description" content="A two-actuator six-bar walking robot that maps and navigates an indoor lab in ROS 2. 0.211 m AMCL RMSE without an IMU.">
+<link rel="canonical" href="https://kriswonka.github.io/slam.html">
+<link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+<meta name="theme-color" content="#141a19">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Tian (Kris) Xia">
+<meta property="og:title" content="SLAM Walking Robot — Tian (Kris) Xia">
+<meta property="og:description" content="A two-actuator six-bar walking robot that maps and navigates an indoor lab in ROS 2. 0.211 m AMCL RMSE without an IMU.">
+<meta property="og:url" content="https://kriswonka.github.io/slam.html">
+<meta property="og:image" content="https://kriswonka.github.io/assets/og/slam.jpg?v=1788221884">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SLAM Walking Robot — Tian (Kris) Xia">
+<meta name="twitter:description" content="A two-actuator six-bar walking robot that maps and navigates an indoor lab in ROS 2. 0.211 m AMCL RMSE without an IMU.">
+<meta name="twitter:image" content="https://kriswonka.github.io/assets/og/slam.jpg?v=1788221884">
+<link rel="preload" href="assets/fonts/archivo-600-800-latin.woff2?v=1788221884" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/source-serif-4-400-600-latin.woff2?v=1788221884" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css?v=1788221884">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<nav class="sitenav" aria-label="Projects"><div class="wrap">
+  <a href="index.html" class="home">All projects</a>
+  <a href="quadruped.html">Quadruped</a>
+  <a href="slam.html" aria-current="page">SLAM</a>
+  <a href="army.html">ArmY</a>
+  <a href="linefollower.html">Air car</a>
+  <a href="robomaster.html">RoboMaster</a>
+</div></nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow"><b>Undergraduate thesis</b> · Dalian University of Technology · carried out at UC Irvine · Jan–May 2026</p>
+
+    <div class="hero-grid">
+      <div>
+        <h1>SLAM Walking Robot</h1>
+        <p class="lede">
+          Off-the-shelf navigation stacks assume wheels. This chassis walks: it has a large startup
+          dead-zone, it lurches with every gait cycle, and <b>its odometry is unreliable because a
+          walking robot's feet slip on the floor</b>. I built a full 2-D LiDAR SLAM and Nav2 stack on
+          it, and — accounting for that slip — added a frontier rule that prices in what turning costs
+          a walking machine, then measured how wrong the result actually was.
+        </p>
+      </div>
+      <figure class="hero-fig uncropped">
+        <video preload="none" src="assets/slam/hero_robot.mp4?v=1788221884" poster="assets/slam/hero_poster.jpg?v=1788221884" width="600" height="800"
+               muted loop playsinline controls
+               aria-label="The full run in one continuous handheld shot, played at double speed: the six-bar walking robot crossing a lab floor while the laptop in the same frame shows the occupancy map filling in room by room."></video>
+      </figure>
+    </div>
+
+    <dl class="specs">
+      <div><dt>Localization RMSE</dt><dd>0.211 m<small>on the robot · spec ≤ 0.25 m · N = 35 · no IMU</small></dd></div>
+      <div><dt>Accumulated heading change</dt><dd>−44%<small>simulated ablation · 1899° → 1056°</small></dd></div>
+      <div><dt>Path length</dt><dd>−36%<small>simulated ablation · 20.97 → 13.49 m</small></dd></div>
+    </dl>
+  </div>
+</header>
+
+<main id="main">
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag plain">Platform</span>
+      <h2>Two motor drivers, stacked</h2>
+    </div>
+
+    <div class="split" style="--cols:1fr 1fr">
+      <figure style="margin:0">
+        <img src="assets/slam/deck.jpg?v=1788221884" width="1200" height="660" loading="lazy"
+             alt="Close view of the robot's electronics deck: the LiDAR on its mast at the back, the Jetson enclosure on the left, and a stack of boards in the middle held down over the chassis plate.">
+        <figcaption>
+          The deck as built &mdash; LiDAR on its platform, Jetson at the left, and the driver stack
+          in the middle.
+        </figcaption>
+      </figure>
+      <div class="narrow">
+        <h3>Why the first board had to go</h3>
+        <p>
+          The chassis originally drove its two gearmotors through an L298N &mdash; a bipolar
+          Darlington bridge that drops about 2.5&nbsp;V across its own outputs, so on a 12&nbsp;V rail
+          the motor sees roughly 9.5&nbsp;V and the rest leaves as heat, rated <strong>2&nbsp;A per
+          channel continuous</strong>. Two 37D gearmotors driving a six-bar walking linkage — and the
+          <b>friction of that linkage throws up current spikes constantly</b> — do not sit comfortably
+          under that number. It failed in the lab on stall current.
+        </p>
+      </div>
+    </div>
+
+    <figure class="paper" style="margin-top:2.4rem">
+      <img src="assets/slam/wiring.jpg?v=1788221884" width="1354" height="900" loading="lazy"
+           alt="Wiring diagram: the Jetson, a USB-to-TTL adapter and the LD19 LiDAR at the left, the Arduino UNO in the middle, two Cytron SHIELD-MD10 R2 boards to its right with yellow jumper caps marked on their PWM and DIR selector blocks, two encoder gearmotors above, a 1000 microfarad electrolytic on the first driver's power terminals, and the battery at bottom left.">
+      <figcaption>
+        <b>The wiring as I drew it.</b> The drawing flattens one thing: the drivers are side by side
+        for readability, but <b>on the robot they are stacked</b>.
+      </figcaption>
+    </figure>
+
+    <div class="split" style="margin-top:2.4rem">
+      <div class="narrow">
+        <h3>The brown-out was not a serial bug</h3>
+        <p>
+          Every time the motors accelerated or reversed under teleop the Arduino&rsquo;s USB dropped,
+          the bridge logged <code>Serial write failed</code>, and it fell into a reconnect loop. It
+          reads like a driver problem and is not: motor back-EMF dumped current into the ground
+          return, the Arduino&rsquo;s ground bounced with it, its USB 5&nbsp;V went out of spec, and
+          <strong>the host concluded the device had been unplugged</strong>.
+        </p>
+      </div>
+      <div class="narrow">
+        <h3>The two fixes</h3>
+        <ul class="plain">
+          <li>A <strong>ground lead</strong> from the Arduino&rsquo;s POWER header straight to the
+            pack negative, bypassing two stacked shield connectors</li>
+          <li>A <strong>1000&nbsp;&micro;F / 35&nbsp;V electrolytic</strong> across
+            board&nbsp;#1&rsquo;s POWER terminals, to absorb the current peaks</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag">Phase 1</span>
+      <h2>Frontier exploration</h2>
+      <span class="phase-sub">130 s of real exploration, at 3×</span>
+    </div>
+
+    <figure>
+      <video preload="none" src="assets/slam/explore_sidebyside.mp4?v=1788221884" poster="assets/slam/explore_poster.jpg?v=1788221884" width="1920" height="720" playsinline controls
+             aria-label="Left: the robot working its way through an office, past bookshelves and a stairwell. Right: the occupancy grid filling in those same rooms."></video>
+      <p class="panel-key p1"><span>Real robot</span><span>The map it is building, same 130 seconds</span></p>
+      <figcaption>
+        <p>
+          The robot is picking its own goals — nobody is driving it. Left and right are the same
+          130 seconds.
+        </p>
+        <p>
+          <b>Reading the map.</b> Gray is confirmed free space, dark navy occupied, cyan and pink
+          Nav2&rsquo;s inflation layers. <b>Green is a frontier</b> — the boundary between known and
+          unknown. The shape opening on the right is <b>a corridor and a stairwell</b>, neither in the
+          map when the run started.
+        </p>
+      </figcaption>
+    </figure>
+
+    <div class="split" style="margin-top:2.4rem">
+      <div class="narrow">
+        <h3>The contribution</h3>
+        <p>
+          The classic frontier rule scores a candidate on distance and information gain. On a
+          wheeled base that is fine — spinning in place is nearly free. On a six-bar walker it is the
+          most expensive thing you can ask for: <b>it slips constantly</b>, which costs a great deal
+          of extra distance, and <b>every slip corrupts the odometry that localization depends on</b>.
+        </p>
+        <p>
+          So I added an explicit <strong>turning penalty</strong> to the utility, and ran a controlled
+          2×2 ablation <strong>in simulation</strong> — penalty on/off, crossed with ideal vs.
+          walking-mechanism physics — five seeds per condition.
+        </p>
+      </div>
+
+      <div>
+        <table>
+          <caption>Simulated 2×2 ablation · walking physics · 5 seeds</caption>
+          <tbody>
+            <tr><th></th><td>β = 0</td><td>β = 2.5</td></tr>
+            <tr><th>Accumulated heading change</th><td>1899°</td><td>1056°</td></tr>
+            <tr><th>Integrated path length</th><td>20.97 m</td><td>13.49 m</td></tr>
+            <tr class="pass"><th>Coverage</th><td>75.8%</td><td>82.4%</td></tr>
+          </tbody>
+        </table>
+        <p class="scope" style="margin-top:1.6rem">
+          <b>Cheaper and more complete at once.</b> −44% turning and −36% path length would be
+          worth little if the robot simply gave up early — coverage going <em>up</em> is what says
+          it did not.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag alt">Phase 2</span>
+      <h2>Navigation on the saved map</h2>
+      <span class="phase-sub">ROS 2 Humble · slam_toolbox · AMCL · Nav2</span>
+    </div>
+
+    <figure>
+      <video preload="none" src="assets/slam/nav_sidebyside.mp4?v=1788221884" poster="assets/slam/nav_poster.jpg?v=1788221884" width="1280" height="360" playsinline controls
+             aria-label="Sixty seconds of the robot walking across the lab beside the matching RViz view."></video>
+      <p class="panel-key"><span>Real robot</span><span>Planned path and live pose</span></p>
+      <figcaption>
+        The goal was set by <b>Prof. McCarthy</b>, at the top-left corner of the room.
+      </figcaption>
+    </figure>
+
+    <div class="split" style="margin-top:2.4rem">
+      <div class="narrow">
+        <h3>What the stack is</h3>
+        <p>
+          slam_toolbox for graph SLAM, AMCL for localization on the saved map, and Nav2 with the
+          Smac global planner, the DWB local controller and a behavior-tree navigator — all
+          re-tuned for a velocity envelope about a third of what the defaults expect
+          (0.31 → 0.10 m/s, 1.9 → 0.60 rad/s), with acceleration limits cut roughly eightfold.
+        </p>
+      </div>
+      <div class="narrow">
+        <h3>The hard part</h3>
+        <p>
+          Textbook differential-drive kinematics did not describe this machine. Rather than trust
+          the nominal geometry, I measured the four scalars that reconcile the model with the
+          prototype: <strong>15623 ticks per meter</strong> (1.57× the geometric value), a
+          <strong>0.3913 m</strong> effective wheelbase, a right-encoder correction, and a
+          <strong>230/255 PWM dead-zone</strong> below which the robot simply does not move.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag plain">Verification</span>
+      <h2>How wrong is it, in meters?</h2>
+    </div>
+
+    <div class="split" style="--cols:.8fr 1.2fr">
+      <figure>
+        <img src="assets/slam/amcl_rmse.jpg?v=1788221884" width="1100" height="1148" loading="lazy"
+             alt="Five trial trajectories overlaid on the occupancy grid, with seven hand-measured floor marks M1 to M7 shown as white crosses and the AMCL position estimates at each.">
+        <figcaption>
+          Five runs through seven taped floor marks. <b>White crosses are hand-measured ground
+          truth</b>; each colored dot is what AMCL believed at that instant.
+        </figcaption>
+      </figure>
+
+      <div>
+        <table>
+          <caption>AMCL position error · 5 trials × 7 marks</caption>
+          <tbody>
+            <tr><th scope="row">Sample points</th><td>N = 35</td></tr>
+            <tr><th scope="row">Mean position error</th><td>0.199 m</td></tr>
+            <tr><th scope="row">RMSE</th><td>0.211 m</td></tr>
+            <tr><th scope="row">95th percentile</th><td>0.311 m</td></tr>
+            <tr class="pass"><th scope="row">Specification ≤ 0.25 m</th><td>satisfied</td></tr>
+          </tbody>
+        </table>
+
+        <h3>How the 35 samples were taken</h3>
+        <p>
+          The marks are <b>strips of tape on the floor</b>, surveyed once. A trial teleops the robot
+          through all seven; at each one <strong>the robot is stopped</strong>,
+          <code>localization_rmse.py</code> logs what AMCL believes, and the true
+          <i>(x,&nbsp;y,&nbsp;&theta;)</i> is <strong>measured by hand off the tape</strong>. Five
+          trials &times; seven marks = 35 paired samples.
+        </p>
+
+        <h3>Why no IMU</h3>
+        <p>
+          Fusing an IMU through an EKF would absorb slip and sharpen heading, and it is the obvious
+          next step. I left it out on purpose: I wanted to know what the LiDAR scan-matcher and the
+          calibration were worth on their own. <strong>0.211 m is that number</strong>.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+      <h2>What I actually did</h2>
+      <div class="split" style="--cols:.75fr 1.25fr;margin-top:1.4rem">
+        <div>
+        <p class="scope">
+      The walking platform is <b>not mine</b> — it is the McCarthy-lab build at UC Irvine of an
+      existing six-bar design. <b>Mine</b> is everything that makes it navigate: the electrical
+      integration, the 20 Hz Arduino firmware, the parameter identification, the ROS 2 and Nav2
+      stack, the frontier utility and its ablation, and the physical error measurement.
+    </p>
+        </div>
+        <div>
+        <ul class="plain">
+      <li><b>Electronics</b> — two 70:1 gearmotors, stacked Cytron MD10 R2 drivers, an Arduino UNO trading velocity commands and encoder deltas with a Jetson Orin Nano at 20 Hz over USB-CDC, behind a 500 ms watchdog</li>
+      <li><b>Operator interface</b> — the RViz dock on the laptop screen in the opening clip is a custom plugin: emergency stop, phase switching, saved-map loading, pose reset, global speed scale</li>
+      <li><b>Written up</b> — submitted as the degree thesis at Dalian University of Technology</li>
+    </ul>
+        </div>
+      </div>
+    </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+      <nav class="footnav" aria-label="All projects">
+        <a href="quadruped.html"><span class="fn-when">Jul – Aug 2026</span><span class="fn-title">Quadruped Fall Recovery</span></a>
+        <span class="here" aria-current="page"><span class="fn-when">Jan – May 2026</span><span class="fn-title">SLAM Walking Robot</span></span>
+        <a href="army.html"><span class="fn-when">Oct 2025 – Mar 2026</span><span class="fn-title">ArmY — Grasp-Pose Selection</span></a>
+        <a href="linefollower.html"><span class="fn-when">Spring 2025</span><span class="fn-title">Compressed-Air Line-Following Car</span></a>
+        <a href="robomaster.html"><span class="fn-when">2024 season</span><span class="fn-title">RoboMaster Engineer — SCARA Arm</span></a>
+      </nav>
+      <div class="footer-end">
+        <a href="https://github.com/KrisWonka/slam-walker">Code on GitHub →</a>
+        <a href="index.html" class="back">← All projects</a>
+      </div>
+      <p class="footer-contact">
+      <a href="mailto:krisxiat57@gmail.com">krisxiat57@gmail.com</a>
+      <a href="https://github.com/KrisWonka">github.com/KrisWonka</a>
+      <a href="https://www.linkedin.com/in/kris-xia">linkedin.com/in/kris-xia</a>
+    </p>
+
+  </div>
+</footer>
+
+<script>
+// 一页里自动播放的视频一多，浏览器就会拒绝其中一部分。改成滚到视野里才播、
+// 离开就暂停：既绕开这个限制，也省掉看不见的解码开销。
+(function () {
+  var vids = [].slice.call(document.querySelectorAll('video[autoplay]'));
+  if (!vids.length) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  vids.forEach(function (v) { v.removeAttribute('autoplay'); v.pause(); });
+  if (reduce) { vids.forEach(function (v) { v.setAttribute('controls', ''); }); return; }
+  if (!('IntersectionObserver' in window)) { vids.forEach(function (v) { v.play().catch(function(){}); }); return; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.play().catch(function () { e.target.setAttribute('controls', ''); }); }
+      else { e.target.pause(); }
+    });
+  }, { rootMargin: '200px 0px', threshold: 0.15 });
+  vids.forEach(function (v) { io.observe(v); });
+})();
+</script>
+</body>
+</html>
