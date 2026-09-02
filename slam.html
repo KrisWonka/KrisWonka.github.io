@@ -76,7 +76,7 @@
       <h2>Two motor drivers, stacked</h2>
     </div>
 
-    <div class="split" style="--cols:1fr 1fr">
+    <div class="split" style="align-items:center;--cols:1fr 1fr">
       <figure style="margin:0">
         <img src="assets/slam/deck.jpg?v=1788221884" width="1200" height="660" loading="lazy"
              alt="Close view of the robot's electronics deck: the LiDAR on its mast at the back, the Jetson enclosure on the left, and a stack of boards in the middle held down over the chassis plate.">
@@ -171,7 +171,7 @@
         <p>
           So I added an explicit <strong>turning penalty</strong> to the utility, and ran a controlled
           2×2 ablation <strong>in simulation</strong> — penalty on/off, crossed with ideal vs.
-          walking-mechanism physics — five seeds per condition.
+          walking-mechanism physics — five runs per condition.
         </p>
       </div>
 
@@ -231,7 +231,7 @@
           the nominal geometry, I measured the four scalars that reconcile the model with the
           prototype: <strong>15623 ticks per meter</strong> (1.57× the geometric value), a
           <strong>0.3913 m</strong> effective wheelbase, a right-encoder correction, and a
-          <strong>230/255 PWM dead-zone</strong> below which the robot simply does not move.
+          <strong>120/255 PWM dead-zone</strong> below which the robot simply does not move.
         </p>
       </div>
     </div>
@@ -247,7 +247,7 @@
       <h2>How wrong is it, in meters?</h2>
     </div>
 
-    <div class="split" style="--cols:.8fr 1.2fr">
+    <div class="split" style="align-items:center;--cols:.8fr 1.2fr">
       <figure>
         <img src="assets/slam/amcl_rmse.jpg?v=1788221884" width="1100" height="1148" loading="lazy"
              alt="Five trial trajectories overlaid on the occupancy grid, with seven hand-measured floor marks M1 to M7 shown as white crosses and the AMCL position estimates at each.">
@@ -274,7 +274,7 @@
           The marks are <b>strips of tape on the floor</b>, surveyed once. A trial teleops the robot
           through all seven; at each one <strong>the robot is stopped</strong>,
           <code>localization_rmse.py</code> logs what AMCL believes, and the true
-          <i>(x,&nbsp;y,&nbsp;&theta;)</i> is <strong>measured by hand off the tape</strong>. Five
+          <i>(x,&nbsp;y)</i> is <strong>measured by hand off the tape</strong>. Five
           trials &times; seven marks = 35 paired samples.
         </p>
 
