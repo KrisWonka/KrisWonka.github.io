@@ -499,11 +499,16 @@ footer a{ margin-right:1.4rem; display:inline-block; }
    anything on screen. Flagged here because this rule is NOT home-page-scoped. */
 footer a{ padding:.4rem 0; }
 
-/* ---------- figure plate: two natural-aspect figures, captions bottom-aligned ---------- */
-.plate{ display:grid; gap:clamp(1rem,2vw,1.5rem); grid-template-columns:1fr; margin-top:1.8rem; }
+/* ---------- figure plate: two natural-aspect figures side by side ----------
+   The captions used to stretch (flex:1 1 auto + height:100%) so both bottoms
+   lined up. That only reads well when the two images are close to the same
+   aspect; when they are not, the shorter figure grows a tall empty caption —
+   a dark slab under the picture. Each figure now takes its own height and the
+   grid aligns them at the top instead. */
+.plate{ display:grid; gap:clamp(1rem,2vw,1.5rem); grid-template-columns:1fr;
+        margin-top:1.8rem; align-items:start; }
 @media (min-width:760px){ .plate{ grid-template-columns:1fr 1fr; } }
-.plate figure{ margin:0; display:flex; flex-direction:column; height:100%; }
-.plate figcaption{ flex:1 1 auto; }
+.plate figure{ margin:0; }
 .plate img{ width:100%; }
 /* figures lifted straight out of the paper keep their own white ground */
 .paper img{ background:#fbfbf9; padding:.85rem; }
