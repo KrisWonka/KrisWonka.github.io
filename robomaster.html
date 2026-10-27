@@ -44,7 +44,7 @@
         <h1><span class="keep">RoboMaster Engineer</span> — SCARA Arm</h1>
         <p class="lede">
           The Engineer robot takes a 650&nbsp;g ore cube off a resource island and puts it into an
-          exchange station well above it. I designed the <b>SCARA arm and its two-stage lift</b> —
+          exchange station well above it. With a teammate, I co-designed the <b>SCARA arm and its two-stage lift</b> —
           the configuration, the link lengths, where the motors sit, the beam section, and the
           shafting that holds it together.
         </p>
@@ -260,9 +260,9 @@
         </p>
         <p>
           And it is fitted <b>30 mm axis vertical</b>, standing in the plane the arm bends in. Run
-          the section through the same integral both ways and it comes out at roughly <b>17,100
-          mm&#8308; on the deep axis against 8,900 mm&#8308; on the shallow one</b>: <b>the same tube
-          turned ninety degrees loses about half its bending stiffness</b>.
+          the section through the same integral both ways and the deep axis comes out <b>about 1.8
+          times stiffer than the shallow one</b>: <b>the same tube turned ninety degrees loses more
+          than 40% of its bending stiffness</b>.
         </p>
 
       </div>
@@ -385,7 +385,7 @@
   <div class="wrap">
     <div class="phase-head">
       <span class="phase-tag alt">Step 4</span>
-      <h2>The chassis fix that outlived the robot</h2>
+      <h2>A chassis failure, and the fix</h2>
     </div>
 
 
@@ -398,14 +398,12 @@
       <p class="scope">
         The carbon plates either side of each wheel axle were joined <b>only at the top</b>. That
         makes each plate a <b>cantilever</b>: load the wheel and the lower edge deflects, and the
-        flange bearing in the mecanum hub <b>walks out of the plate</b>. The wheel set goes loose,
-        and it does it mid-match.
+        flange bearing in the mecanum hub <b>walks out of the plate</b>. The wheel set goes loose.
       </p>
       <p>
         The fix closes the cantilever rather than stiffening it: a <b>plane needle-roller bearing</b>
         on the outer edge of the outer plate, clamped with <b>M6 screws</b>, so the plate is
-        supported at both ends instead of one. It survived the season, and <b>later robots carried
-        the clamping scheme over unchanged</b>.
+        supported at both ends instead of one.
       </p>
     </div>
 
@@ -440,17 +438,17 @@
         <div>
         <p class="scope">
       The Engineer is one robot in a university RoboMaster team, and a team builds it.
-      <b>The mechanical design of this first-generation machine was mine, end to end</b> — the SCARA
-      arm, the two-stage lift and the chassis: configuration, link and joint sizing, motor placement
-      and torque path, section and material, and the shafting, bearings and wheel modules.
+      <b>I co-designed its mechanism with a teammate</b>: I found an open-source SCARA design and
+      reworked it into the PRRRR arm on this page, and I designed the two-stage lead-screw lift,
+      choosing its parts together with him. Between us that covered configuration, link lengths,
+      motor placement, section and material, and the shafting and bearings.
     </p>
         </div>
         <div>
         <ul class="plain">
       <li><b>Designed in SolidWorks</b>, load cases checked before anything was machined</li>
-      <li><b>Selected the drivetrain and the actuators</b> — joint motors against computed inertia
-        and torque-speed curves, the lift stages against a force calculation and the supplier's
-        tables, with the margin chosen deliberately over the computed floor</li>
+      <li><b>Selected the lift components with a teammate</b> — against a force calculation and
+        the supplier's tables, with the margin chosen deliberately over the computed floor</li>
     </ul>
         </div>
       </div>
