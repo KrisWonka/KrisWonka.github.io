@@ -219,9 +219,8 @@
         <h3>What the stack is</h3>
         <p>
           slam_toolbox for graph SLAM, AMCL for localization on the saved map, and Nav2 with the
-          Smac global planner, the DWB local controller and a behavior-tree navigator — all
-          re-tuned for a velocity envelope about a third of what the defaults expect
-          (0.31 → 0.10 m/s, 1.9 → 0.60 rad/s), with acceleration limits cut roughly eightfold.
+          Smac global planner, the DWB local controller and a behavior-tree navigator, re-tuned for
+          the walker's slow gait, with linear speed capped at 0.10 m/s.
         </p>
       </div>
       <div class="narrow">
