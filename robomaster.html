@@ -331,41 +331,26 @@
         <h3>Why the two carriage blocks are not level with each other</h3>
         <p>
           The SCARA platform hangs off the front of the carriage, so what it puts into the rails is
-          weight <em>plus an overturning moment</em>, trying to tip the platform nose-down. There are
-          two rails, one block on each, and the aluminium bracket joining them to the platform
-          <b>deliberately sets them at different heights.</b>
+          weight <em>plus an overturning moment</em>, trying to tip the platform nose-down. The two
+          rails sit <b>90 mm apart</b> with one <b>HGH15CA</b> block on each, and the aluminium bracket
+          joining them to the platform <b>deliberately sets the blocks 24 mm apart along the rails.</b>
         </p>
         <p>
-          The two rails sit <b>90 mm apart</b>, and that separation is <em>horizontal</em> &mdash; it
-          handles roll and yaw and does nothing for a moment acting about the axis running between
-          them. Level with each other there is no separation <em>along</em> the rails, so
-          <b>no lever arm and no force couple</b>: each block absorbs its share as rated pitch moment,
-          far more restrictive than its load rating.
-        </p>
-        <p>
-          <b>Staggering them by 24 mm along the rails turns that moment into a pair of forces</b>
-          &mdash; the higher block pulled off its rail, the lower one pushed into it, each seeing a
-          normal load instead:
+          Level, the pair resists that moment only through each block&rsquo;s own pitch rating:
+          <b>2 &times; 100 = 200 N&middot;m</b>. Staggered, part of it can be carried as a
+          <b>push-pull couple across the 24 mm</b> &mdash; the higher block pulled off its rail, the
+          lower one pushed into it.
         </p>
         <p class="scope">
-          Level, the pair is limited by twice the block&rsquo;s permissible pitch moment —
-          <b>2 &times; 100 = 200 N&middot;m</b> for the <b>HGH15CA</b> blocks this uses. Staggered by
-          24 mm the limit is instead the static load rating acting on that lever arm —
-          <b>23.47 kN &times; 0.024 m = 563 N&middot;m</b>. <b>The same two blocks, close to three
-          times the overturning capacity</b>, for the price of a longer bracket.
+          A first estimate put the gain near three times (<b>23.47 kN &times; 0.024 m = 563 N&middot;m</b>).
+          Checked again, that number assumes both blocks share one rail. Here they sit on different
+          rails, so the push on one and the pull on the other, <b>90 mm apart sideways, also twist the
+          carriage about the rail axis</b>, and each block has to resist that twist with its
+          120 N&middot;m roll rating. That caps the extra capacity at about <b>64 N&middot;m</b>:
+          roughly <b>264 N&middot;m in total, 1.3&times; rather than 2.8&times;</b>.
         </p>
         <p>
-          Write that gain out and it reduces to <b>d / (2 &times; M<sub>pitch</sub>/C<sub>0</sub>)</b>
-          &mdash; the stagger over twice the block&rsquo;s own effective moment arm, which is
-          <b>100 N&middot;m / 23.47 kN = 4.3 mm</b> here. That arm grows with block size, so the same
-          24 mm stagger returns <b>2.8&times; on an HGH15CA, 2.2&times; on an HGH20CA and
-          1.9&times; on an HGH25CA</b>. <b>The trick pays most exactly where you would otherwise be
-          tempted to buy a bigger block.</b>
-        </p>
-        <p>
-          And that is the cheap side of the trade: the bracket costs a little vertical space, while
-          blocks large enough to take the moment head-on cost mass, money and room &mdash; on an axis
-          whose whole job is to lift what it is bolted to.
+          <b>To get the full couple, both blocks would have to be on the same rail.</b>
         </p>
     </div>
       <div>
