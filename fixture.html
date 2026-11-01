@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Follow-Up Fixturing System — Tian (Kris) Xia</title>
+<meta name="description" content="A fixture that follows the spindle to hold thin-walled parts for drilling: a feed laid out to cancel its own moment, and a vacuum cup with a rigid rib.">
+<link rel="canonical" href="https://krisxia.com/fixture.html">
+<link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+<meta name="theme-color" content="#141a19">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Tian (Kris) Xia">
+<meta property="og:title" content="Follow-Up Fixturing System — Tian (Kris) Xia">
+<meta property="og:description" content="A fixture that follows the spindle to hold thin-walled parts for drilling: a feed laid out to cancel its own moment, and a vacuum cup with a rigid rib.">
+<meta property="og:url" content="https://krisxia.com/fixture.html">
+<meta property="og:image" content="https://krisxia.com/assets/og/fixture.jpg?v=1788221884">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Follow-Up Fixturing System — Tian (Kris) Xia">
+<meta name="twitter:description" content="A fixture that follows the spindle to hold thin-walled parts for drilling: a feed laid out to cancel its own moment, and a vacuum cup with a rigid rib.">
+<meta name="twitter:image" content="https://krisxia.com/assets/og/fixture.jpg?v=1788221884">
+<link rel="preload" href="assets/fonts/archivo-600-800-latin.woff2?v=1788221884" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/source-serif-4-400-600-latin.woff2?v=1788221884" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css?v=1788221890">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<nav class="sitenav" aria-label="Projects"><div class="wrap">
+  <a href="index.html" class="home">All projects</a>
+  <a href="quadruped.html">Quadruped</a>
+  <a href="slam.html">SLAM</a>
+  <a href="army.html">ArmY</a>
+  <a href="linefollower.html">Air car</a>
+  <a href="robomaster.html">RoboMaster</a>
+  <a href="fixture.html" aria-current="page">Fixture</a>
+</div></nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow"><b>Follow-up fixturing</b> · Dalian University of Technology · Technical lead · May 2023 – Sep 2024</p>
+
+    <div class="hero-grid">
+      <div>
+        <h1 style="text-wrap:balance">Follow-Up Fixturing System</h1>
+        <p class="lede">
+          Large thin-walled parts &mdash; the kind an aircraft wing is built from &mdash; flex and
+          vibrate under a drill. Instead of a dedicated fixture under the whole part, this one
+          <b>rides on the machine&rsquo;s spindle head</b> and holds the part with vacuum cups close to
+          the hole being drilled. As the project&rsquo;s technical lead, I designed <b>the layout of the feed</b> that
+          pushes that support onto the part, and <b>the rigid-rib vacuum cup</b> that grips it.
+        </p>
+      </div>
+      <figure class="hero-fig">
+        <img src="assets/fixture/rig_marked.jpg?v=1788221884" width="769" height="574"
+             alt="The test rig on a machining center: two tall aluminium electric-cylinder columns stand either side of the machine's spindle, each inside an orange dashed box; balloon 1 points at the right-hand column and balloon 2 at the spindle nose.">
+        <figcaption>The test rig on a machining center. 1&nbsp;feed modules, in my layout · 2&nbsp;drilling spindle.</figcaption>
+      </figure>
+    </div>
+
+    <dl class="specs">
+      <div><dt>Feed module · 800&nbsp;N limit load</dt><dd>0.0018&nbsp;mm<small>maximum displacement · SolidWorks static FEA</small></dd></div>
+      <div><dt>Vacuum cup · 100&nbsp;N axial</dt><dd>2.042 → 0.0007&nbsp;mm<small>plain cup → rigid rib · SolidWorks static FEA</small></dd></div>
+      <div><dt>Patent</dt><dd>Granted<small>CN119319467B · Oct 2025 · co-inventor 5 of 7</small></dd></div>
+    </dl>
+  </div>
+</header>
+
+<main id="main">
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag plain">The problem</span>
+      <h2>Support that has to follow the drill</h2>
+    </div>
+
+    <div class="split" style="--cols:minmax(0,var(--measure)) 1fr;column-gap:2rem">
+      <div class="narrow">
+        <p>
+          Wing and fuselage structures are joined with bolts and rivets, so <b>a joint is only as
+          good as its hole</b>. And the parts are thin: long against their thickness and low in
+          stiffness, they deform and vibrate under the tool. The tool knocks against the part, the
+          holes come out poor, tools break, and parts get scrapped.
+        </p>
+        <p>
+          The usual answer is a fixture shaped to the part that supports a large area of it
+          &mdash; stiff, but <b>made for one part and very expensive</b>. The alternative is to
+          support the part only where the drill is, and to move that support with the spindle:
+          a <strong>follow-up fixture</strong>.
+        </p>
+        <p>
+          This one has two halves: a <b>feed</b> bolted to the spindle mount pushes a support
+          plate onto the part, and <b>vacuum cups</b> on that plate grip it close to the hole.
+        </p>
+        <p class="scope">
+          An earlier follow-up fixture drove its support from <b>one side</b> of the spindle, and
+          resisted torque and vibration poorly. That is where my part of this one starts.
+        </p>
+      </div>
+
+      <figure class="paper" style="margin-top:0">
+        <img src="assets/fixture/patent_fig1.jpg?v=1788221888" width="1447" height="1216" loading="lazy"
+             alt="Line drawing from the patent: the tall machine spindle head in the middle, a feed module on each side of it inside an orange dashed box, the spindle mount between them, and the adsorption-support module with its cups along the bottom. Numbers 1 to 5 label the parts.">
+        <figcaption>
+          From the granted patent; dashed boxes added around my part. 1&nbsp;adsorption-support
+          module · 2&nbsp;feed modules · 3&nbsp;sensor · 4&nbsp;spindle head · 5&nbsp;spindle mount.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag">Step 1</span>
+      <h2>A feed that cancels its own moment</h2>
+      <span class="phase-sub">Two electric cylinders, symmetric about the drilling point</span>
+    </div>
+
+    <div class="split">
+      <div class="narrow">
+        <p>
+          The feed cannot sit on the drilling axis &mdash; <b>the spindle is already there</b>. So
+          it sits off to the side, at an offset <i>e</i>, and the axial force at the drilling point
+          reaches it as a moment: <strong>M = F&middot;e</strong>.
+        </p>
+        <p>
+          An electric cylinder is built to push along its own axis. <b>Put a moment on it and it
+          no longer holds position accurately</b> &mdash; and holding position is the whole job of
+          a feed.
+        </p>
+        <p>
+          So instead of one actuator beside the spindle there are <b>two, placed symmetrically
+          about the drilling point</b>, each an electric cylinder driven by a closed-loop stepper.
+          Each takes F/2 at the same offset on opposite sides: <b>the two moments are equal and
+          opposite, and cancel</b>. What is left on each cylinder is axial force, which is what it
+          was built to carry.
+        </p>
+      </div>
+
+      <figure class="paper" style="margin-top:0">
+        <img src="assets/fixture/moment.png?v=1788221888" width="1440" height="720" loading="lazy"
+             alt="Two-panel schematic. Left, one offset actuator: a force F acts along the drill axis while a single actuator sits a distance e to the side, so a moment M = F·e appears. Right, two actuators symmetric about the drill: one on each side at distance e, each carrying F/2, with curved arrows marking that their moments cancel.">
+        <figcaption>Schematic, not to scale.</figcaption>
+      </figure>
+    </div>
+
+    <div class="split" style="margin-top:2.4rem">
+      <div class="narrow">
+        <h3 style="margin-top:0">Checked in FEA</h3>
+        <p>
+          I ran the feed module through a static analysis in SolidWorks Simulation at an
+          <b>800&nbsp;N limit load</b>. The largest displacement anywhere in the module came out at
+          <strong>1.768&nbsp;&times;&nbsp;10<sup style="line-height:0">&minus;3</sup>&nbsp;mm &mdash; about 0.0018&nbsp;mm</strong>.
+        </p>
+        <h3>What the patent protects</h3>
+        <p>
+          The layout is in a Chinese invention patent, <b>CN119319467B</b>, granted in October 2025.
+          <b>Claim 1 includes this layout.</b> In the words of the granted claim, the feed
+          modules come &ldquo;in two groups, distributed symmetrically on both sides of the spindle
+          mount (5), in a symmetric layout overall&rdquo; (my translation).
+        </p>
+      </div>
+
+      <figure class="paper" style="margin-top:0">
+        <img src="assets/fixture/fea_feed.png?v=1788221887" width="671" height="422" loading="lazy" style="width:100%"
+             alt="SolidWorks displacement plot of the feed module: two cylinder columns joined by a cross plate, load arrows at the bottom of both rods; the rods shade from green to red at their ends, legend maximum 1.768e-03 mm.">
+        <figcaption>
+          Simulation, not a measurement on the rig.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag alt">Step 2</span>
+      <h2>A cup that seals soft and locates hard</h2>
+      <span class="phase-sub">Rigid-rib vacuum cup · patent application CN120650317A</span>
+    </div>
+
+    <div class="split" style="--cols:1.3fr .7fr">
+      <div class="narrow">
+        <p>
+          A vacuum cup on this fixture has two jobs that want opposite materials. <b>To seal, it
+          has to be soft</b>: a hard cup on a curved part touches only some of its rim, and the
+          vacuum never forms. <b>To locate, it has to be hard</b>: a soft cup seals well but deforms
+          and vibrates under load, so it cannot serve as a datum for precise machining.
+        </p>
+        <p>
+          The rigid-rib cup stops asking one part to do both. <b>The soft cup still does
+          the sealing; a metal rib inside it does the locating.</b> The rib is a disc that sits
+          inside the cup&rsquo;s bowl, with a stem through the cup&rsquo;s center hole and a
+          clamping piece behind it, so <b>load goes through the rib into the fixture body</b>
+          instead of through the soft cup. An air passage runs through the rib and its stem, so
+          the vacuum is drawn through it.
+        </p>
+      </div>
+
+      <figure class="paper" style="margin-top:0">
+        <img src="assets/fixture/cup_exploded.png?v=1788221888" width="929" height="688" loading="lazy"
+             alt="Exploded side view from the patent application: from top to bottom a thin clamping plate (101), a mounting plate (102), the rigid rib with its stem standing up from a flat disc (103) with a small sensor beside it (1031), and the bowl-shaped cup (104).">
+        <figcaption>
+          From patent application CN120650317A. 101&nbsp;clamping plate · 102&nbsp;mounting plate ·
+          103&nbsp;rigid rib · 1031&nbsp;pressure sensor · 104&nbsp;soft cup.
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="split" style="--cols:.62fr 1.38fr;margin-top:2.4rem">
+      <div class="narrow">
+        <h3 style="margin-top:0">Same load, both designs</h3>
+        <p>
+          Under the same 100&nbsp;N axial load in SolidWorks static FEA, the plain cup&rsquo;s largest
+          displacement is <strong>2.042&nbsp;mm</strong>. With the rib it is <strong>7.003&nbsp;&times;&nbsp;10<sup style="line-height:0">&minus;4</sup>&nbsp;mm
+          &mdash; about 0.0007&nbsp;mm</strong>, more than three orders of magnitude less.
+        </p>
+        <p class="scope">
+          Two simulations, not a test. What they show is the point of the design: <b>the rib, not
+          the soft cup, is now what the part is located against.</b>
+        </p>
+      </div>
+
+      <div>
+        <div class="plate" style="margin-top:0">
+          <figure class="paper">
+            <img src="assets/fixture/fea_cup_plain.png?v=1788221887" width="692" height="484" loading="lazy"
+                 alt="SolidWorks displacement plot of a plain vacuum cup seen from below, with load arrows over its whole face; the cup's outer rim shows red, near the legend maximum of 2.042 mm.">
+            <figcaption>Plain cup.</figcaption>
+          </figure>
+          <figure class="paper">
+            <img src="assets/fixture/fea_cup_rib.png?v=1788221887" width="692" height="485" loading="lazy"
+                 alt="SolidWorks displacement plot of the rigid-rib vacuum cup seen from below: a ring of load arrows on the rib inside the cup, the rib's rim red; legend maximum 7.003e-04 mm.">
+            <figcaption>With the rigid rib.</figcaption>
+          </figure>
+        </div>
+        <p class="note">
+          My SolidWorks runs. Each plot has its own color scale, so compare the legend maxima, not
+          the colors. Magenta arrows are the applied load, the green arrows on the stem the
+          restraints.
+        </p>
+      </div>
+    </div>
+
+    <div class="split" style="margin-top:2.2rem">
+      <div class="narrow">
+        <h3>A contact face that can be changed</h3>
+        <p>
+          Making the rib the datum has a cost: <b>it is hard, it presses directly on the part, and
+          hard on a softer surface leaves marks</b>. So the rib&rsquo;s contact face is a
+          <strong>quick-change insert</strong>, swapped to suit the material of the part being
+          drilled.
+        </p>
+      </div>
+      <div class="narrow">
+        <h3>Filed</h3>
+        <p>
+          The cup is the subject of a Chinese invention patent application, <b>CN120650317A</b>,
+          published in September 2025 and under substantive examination. I am co-inventor 4 of 9.
+          The quick-change insert is not part of the application.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag">Step 3</span>
+      <h2>On the machine</h2>
+      <span class="phase-sub">The fixture on a machining center</span>
+    </div>
+
+    <div class="narrow">
+      <p>
+        On the machine, <b>the two tall columns either side of the spindle are the feed
+        modules</b> &mdash; electric cylinders with their steppers at the top &mdash; and the
+        plate across their feet carries the cups. In a run, the feed brings the plate down onto
+        the part, the cups take hold beside the hole, and the support moves with the spindle
+        while it drills.
+      </p>
+    </div>
+    <div class="plate" style="max-width:760px;margin-left:auto;margin-right:auto">
+      <figure>
+        <img src="assets/fixture/onmachine_up.jpg?v=1788221890" width="556" height="720" loading="lazy"
+             alt="The fixture on the machine with its support plate raised above a flat panel on the table; the camera and spindle in the middle, a feed column on each side.">
+        <figcaption>Plate raised, before the cups take hold.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/fixture/onmachine_down.jpg?v=1788221890" width="556" height="720" loading="lazy"
+             alt="The same view with the support plate lowered onto the panel, the cups pressed against it.">
+        <figcaption>Plate down on the panel, during follow-up support.</figcaption>
+      </figure>
+    </div>
+    <p class="note" style="text-align:center">Frames from the 2024 demo video.</p>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag plain">Patents and award</span>
+      <h2>A patent, an application and a national gold</h2>
+    </div>
+
+    <div class="dtab" style="margin-top:0">
+      <table>
+        <caption>Patents assigned to Dalian University of Technology</caption>
+        <thead>
+          <tr><th scope="col">&nbsp;</th><th scope="col">What it covers</th><th scope="col">Status · my place</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">CN119319467B</th>
+            <td data-h="covers">Chinese invention patent: anti-torsion, high-stiffness feed module and
+              asynchronous adsorption support for a follow-up fixturing device. <b>Claim 1 includes
+              the symmetric feed layout.</b></td>
+            <td data-h="status"><b>Granted</b>, October 2025 · co-inventor 5 of 7</td>
+          </tr>
+          <tr>
+            <th scope="row">CN120650317A</th>
+            <td data-h="covers">Chinese invention patent application: rigid-rib positioning,
+              pressure-controlled vacuum cup and its control method.</td>
+            <td data-h="status"><b>Under substantive examination</b> · co-inventor 4 of 9</td>
+          </tr>
+          <tr>
+            <th scope="row">&ldquo;Internet+&rdquo;</th>
+            <td data-h="covers">Innovation and entrepreneurship competition, entered with this
+              project.</td>
+            <td data-h="status"><b>National Gold</b>, 2025</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<hr class="inflation">
+
+<section>
+  <div class="wrap">
+      <h2>What I actually did</h2>
+      <div class="split" style="--cols:1.25fr .75fr;margin-top:1.4rem">
+        <div>
+        <p class="scope">
+      The follow-up fixture is a project at Dalian University of Technology, and <b>I was its
+      technical lead</b> from May 2023 to September 2024. <b>Mine</b> are the pieces this page is
+      about: the symmetric twin-cylinder feed layout, and the rigid-rib vacuum cup with its
+      quick-change contact insert.
+    </p>
+        </div>
+        <div>
+        <ul class="plain">
+      <li><b>Designed</b> the anti-torsion feed layout, and the rigid-rib cup and its quick-change
+        insert</li>
+      <li><b>Ran the static FEA</b> in SolidWorks Simulation &mdash; every FEA plot on this page is
+        my run</li>
+      <li><b>Supervised</b> the team&rsquo;s SolidWorks and AutoCAD modeling</li>
+      <li><b>Co-inventor</b> on the granted patent (5 of 7) and the application (4 of 9)</li>
+    </ul>
+        </div>
+      </div>
+    </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+      <nav class="footnav" aria-label="All projects">
+        <a href="quadruped.html"><span class="fn-when">Jun – Aug 2026</span><span class="fn-title">Quadruped Fall Recovery</span></a>
+        <a href="slam.html"><span class="fn-when">Jan – May 2026</span><span class="fn-title">SLAM Walking Robot</span></a>
+        <a href="army.html"><span class="fn-when">Oct 2025 – Mar 2026</span><span class="fn-title">ArmY — Grasp-Pose Selection</span></a>
+        <a href="linefollower.html"><span class="fn-when">Spring 2025</span><span class="fn-title">Compressed-Air Line-Following Car</span></a>
+        <a href="robomaster.html"><span class="fn-when">2024 season</span><span class="fn-title">RoboMaster Engineer — SCARA Arm</span></a>
+        <span class="here" aria-current="page"><span class="fn-when">May 2023 – Sep 2024</span><span class="fn-title">Follow-Up Fixturing System</span></span>
+      </nav>
+      <div class="footer-end">
+        <a href="index.html" class="back">← All projects</a>
+      </div>
+      <p class="footer-contact">
+      <a href="mailto:krisxia@umich.edu">krisxia@umich.edu</a>
+      <a href="https://github.com/KrisWonka">github.com/KrisWonka</a>
+      <a href="https://www.linkedin.com/in/kris-xia">linkedin.com/in/kris-xia</a>
+    </p>
+
+  </div>
+</footer>
+
+</body>
+</html>

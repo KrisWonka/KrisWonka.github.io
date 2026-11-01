@@ -673,7 +673,8 @@ footer .footer-contact a{ margin-right:0; padding:.4rem 0; }
    ============================================================ */
 .footnav{
   display:grid; gap:1px;
-  grid-template-columns:repeat(auto-fit, minmax(min(210px,100%), 1fr));
+  /* six projects: at most three per row, so the grid always closes in full rows (3 + 3) */
+  grid-template-columns:repeat(auto-fit, minmax(max(min(180px,100%), calc((100% - 2px) / 3 - 1px)), 1fr));
   background:var(--line); border:1px solid var(--line);
   margin-bottom:2rem;
 }
