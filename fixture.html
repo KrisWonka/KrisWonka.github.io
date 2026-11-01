@@ -278,34 +278,37 @@
 
 <section>
   <div class="wrap">
-    <div class="phase-head">
-      <span class="phase-tag">Step 3</span>
-      <h2>On the machine</h2>
-      <span class="phase-sub">The fixture on a machining center</span>
-    </div>
-
-    <div class="narrow">
-      <p>
-        On the machine, <b>the two tall columns either side of the spindle are the feed
-        modules</b> &mdash; electric cylinders with their steppers at the top &mdash; and the
-        plate across their feet carries the cups. In a run, the feed brings the plate down onto
-        the part, the cups take hold beside the hole, and the support moves with the spindle
-        while it drills.
-      </p>
-    </div>
-    <div class="plate" style="max-width:760px;margin-left:auto;margin-right:auto">
-      <figure>
-        <img src="assets/fixture/onmachine_up.jpg?v=1788221890" width="556" height="720" loading="lazy"
-             alt="The fixture on the machine with its support plate raised above a flat panel on the table; the camera and spindle in the middle, a feed column on each side.">
-        <figcaption>Plate raised, before the cups take hold.</figcaption>
+    <div class="split" style="--cols:minmax(0,var(--measure)) 1fr;column-gap:2rem">
+      <div>
+      <div class="phase-head">
+        <span class="phase-tag">Step 3</span>
+        <h2>On the machine</h2>
+        <span class="phase-sub">The fixture on a machining center</span>
+      </div>
+      <div class="narrow">
+        <p>
+          On the machine, <b>the two tall columns either side of the spindle are the feed
+          modules</b> &mdash; electric cylinders with their steppers at the top &mdash; and the
+          plate across their feet carries the cups. A run goes in four steps:
+        </p>
+        <ol>
+          <li><b>Recognition.</b> The camera reads the part&rsquo;s features, and the cups are
+            moved clear of them.</li>
+          <li><b>Feed and grip.</b> The feed brings the plate down, and the cups take hold beside
+            the hole.</li>
+          <li><b>Follow-up support.</b> The support stays on the part while the spindle feeds
+            down and back up.</li>
+          <li><b>Reset.</b> The cups release and the module retracts.</li>
+        </ol>
+      </div>
+      </div>
+      <figure style="margin-top:max(0px, min(4.5rem, (100vw - 899px) * 1000));max-width:320px">
+        <video preload="none" src="assets/fixture/run.mp4?v=1788221891" poster="assets/fixture/run_poster.jpg?v=1788221891" width="574" height="720"
+               muted playsinline controls
+               aria-label="The fixture on a machining center running through its four steps: the camera checks the part, the cup positions are adjusted, the plate comes down and the cups grip, the spindle feeds down and up while the support holds, then the cups release and the module lifts away."></video>
+        <figcaption>The 2024 demo video.</figcaption>
       </figure>
-      <figure>
-        <img src="assets/fixture/onmachine_down.jpg?v=1788221890" width="556" height="720" loading="lazy"
-             alt="The same view with the support plate lowered onto the panel, the cups pressed against it.">
-        <figcaption>Plate down on the panel, during follow-up support.</figcaption>
-      </figure>
     </div>
-    <p class="note" style="text-align:center">Frames from the 2024 demo video.</p>
   </div>
 </section>
 
