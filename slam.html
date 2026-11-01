@@ -264,13 +264,13 @@
             <tr><th scope="row">Mean position error</th><td>0.199 m</td></tr>
             <tr><th scope="row">RMSE</th><td>0.211 m</td></tr>
             <tr><th scope="row">95th percentile</th><td>0.311 m</td></tr>
-            <tr class="pass"><th scope="row">Specification ≤ 0.25 m</th><td>satisfied</td></tr>
+            <tr class="pass"><th scope="row">RMSE ≤ 0.25 m</th><td>satisfied</td></tr>
           </tbody>
         </table>
 
         <h3>How the 35 samples were taken</h3>
         <p>
-          The marks are <b>strips of tape on the floor</b>, surveyed once. A trial teleops the robot
+          The marks are <b>strips of tape on the floor</b>, measured once with a ruler. A trial teleops the robot
           through all seven; at each one <strong>the robot is stopped</strong>,
           <code>localization_rmse.py</code> logs what AMCL believes, and the true
           <i>(x,&nbsp;y)</i> is <strong>measured by hand off the tape</strong>. Five
