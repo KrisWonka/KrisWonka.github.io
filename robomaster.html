@@ -121,38 +121,22 @@
 
     <div class="narrow">
       <h3>What the drive shaft is actually resisting</h3>
-    </div>
-
-
-    <div class="split" style="align-items:center">
-      <div class="narrow">
-        <p>
-          <b>Both shoulder motors are bolted to the tail, not to the arm.</b> One turns the first
-          link directly through its flange; the other drives a pulley on a short shaft, and a timing
-          belt carries that torque out along the beam to the elbow. The links accelerate the payload
-          and themselves &mdash; they never have to accelerate the actuators as well.
-        </p>
-        <p>
-          <b>That belt shaft takes exactly two loads.</b> Torque arrives through the flange, and the
-          belt&rsquo;s preload pulls on the pulley &mdash; <em>purely radial</em>, perpendicular to
-          the axis. Nothing pushes along the shaft at all.
-        </p>
-        <p>
-          So the radial pull is what gets designed for, <b>split between two bearings</b>. Those two
-          loads set the shaft diameter; the axial constraints set nothing, and only keep parts where
-          they belong.
-        </p>
-      </div>
-
-      <figure class="paper">
-        <img src="assets/robomaster/shaft_section.jpg?v=1788221884" width="1000" height="735" loading="lazy"
-             alt="CAD section of the belt drive shaft: a stepped shaft running down the centre with a ball bearing at the top and another at the bottom, the timing-belt pulley between them, a key seat visible in the shaft, and the carbon beam entering from the right.">
-        <figcaption>
-          <b>The pulley sits between the two bearings</b> &mdash; outer rings against housing
-          shoulders, the upper inner ring held by a circlip, the lower one by a sleeve. The slot down
-          the middle is the key seat.
-        </figcaption>
-      </figure>
+      <p>
+        <b>Both shoulder motors are bolted to the tail, not to the arm.</b> One turns the first
+        link directly through its flange; the other drives a pulley on a short shaft, and a timing
+        belt carries that torque out along the beam to the elbow. The links accelerate the payload
+        and themselves &mdash; they never have to accelerate the actuators as well.
+      </p>
+      <p>
+        <b>That belt shaft takes exactly two loads.</b> Torque arrives through the flange, and the
+        belt&rsquo;s preload pulls on the pulley &mdash; <em>purely radial</em>, perpendicular to
+        the axis. Nothing pushes along the shaft at all.
+      </p>
+      <p>
+        So the radial pull is what gets designed for, <b>split between two bearings</b>. Those two
+        loads set the shaft diameter; the axial constraints set nothing, and only keep parts where
+        they belong.
+      </p>
     </div>
 
     <figure class="paper" style="margin-top:1.8rem">
@@ -165,27 +149,28 @@
 
     <div class="plate">
       <figure class="paper">
-        <img src="assets/robomaster/shaft_dwg.jpg?v=1788221884" width="1400" height="978" loading="lazy"
-             alt="Engineering drawing of the belt drive shaft: a stepped shaft with a flange and bolt circle, a key seat, and a circlip groove detailed at four to one, with an A-A section below.">
-        <figcaption>
-          <b>The 2024 sheet</b> &mdash; the key seat that takes the torque, and the circlip
-          groove that does not, at 4:1.
-        </figcaption>
-      </figure>
-      <figure class="paper">
         <img src="assets/robomaster/arm_iso.jpg?v=1788221888" width="1284" height="989" loading="lazy"
              alt="Isometric CAD view of the arm: the small belt motor stacked above the large joint motor at the shoulder, the timing belt running out along the carbon beam, and the elbow flange at the far end.">
         <figcaption>
           <b>Motor stack at the shoulder, belt out along the beam, elbow flange at the far end.</b>
         </figcaption>
       </figure>
+      <figure class="paper">
+        <img src="assets/robomaster/shaft_section.jpg?v=1788221884" width="1000" height="735" loading="lazy"
+             alt="CAD section of the belt drive shaft: a stepped shaft running down the centre with a ball bearing at the top and another at the bottom, the timing-belt pulley between them, a key seat visible in the shaft, and the carbon beam entering from the right.">
+        <figcaption>
+          <b>The pulley sits between the two bearings</b> &mdash; outer rings against housing
+          shoulders, the upper inner ring held by a circlip, the lower one by a sleeve. The slot down
+          the middle is the key seat.
+        </figcaption>
+      </figure>
     </div>
 
     <figure class="paper" style="margin-top:1.8rem">
       <img src="assets/robomaster/shaft_redetail.png?v=1788221893" width="2400" height="1697" loading="lazy"
-           alt="A3 detail drawing of the same belt-drive shaft, re-detailed with tolerances: a main view with lengths from the flange face, datums A and B on the two bearing seats with js5 fits, runout frames to A-B, a keyseat section at 4:1 with a 4 N9 width and symmetry tolerance, a 5:1 detail of the circlip groove, and a flange end view with six bolt holes on a 24 mm pitch circle.">
+           alt="A3 detail drawing of the belt-drive shaft, re-detailed with tolerances: a main view with lengths from the flange face, datums A and B on the two bearing seats with js5 fits, runout frames to A-B, a keyseat section at 4:1 with a 4 N9 width and symmetry tolerance, a 5:1 detail of the circlip groove, and a flange end view with six bolt holes on a 24 mm pitch circle.">
       <figcaption>
-        <b>The same shaft, re-detailed in 2026</b> from my 2024 CAD, with fits, datums and
+        <b>The belt-drive shaft, re-detailed in 2026</b> from my 2024 CAD, with fits, datums and
         geometric tolerances.
       </figcaption>
     </figure>
