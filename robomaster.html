@@ -410,6 +410,96 @@
 
 <hr class="inflation">
 
+<section id="storage-redesign">
+  <div class="wrap">
+    <div class="phase-head">
+      <span class="phase-tag">Step 5</span>
+      <h2>Keeping two ore cubes, with 4.4 kg less hardware</h2>
+      <span class="phase-sub">Conveyor storage &rarr; two suction cups</span>
+    </div>
+
+    <div class="split">
+      <div class="narrow">
+        <p>
+          The first storage mechanism was a conveyor with surrounding panels and an opening for
+          the arm to load through. Two motors moved the cubes inward, making room for two.
+          <b>The assembly weighed about 5.7 kg, all on one side of the chassis.</b> That shifted
+          the center of mass toward the storage side. To keep the robot level, we increased the spring preload on that side,
+          reducing its ability to absorb bumps.
+        </p>
+      </div>
+      <div class="narrow">
+        <p>
+          I proposed <b>two suction cups, one per cube</b>, and compared the assembly weights.
+          The pump, cups, and brackets came to about <b>1.3 kg</b>. A teammate favored the conveyor
+          because its panels provided mechanical containment; the concern was a cube coming loose
+          during fast driving.
+        </p>
+      </div>
+    </div>
+
+    <div class="plate">
+      <figure class="paper">
+        <img src="assets/robomaster/storage_conveyor.png" width="1400" height="1050" loading="lazy"
+             alt="CAD view of the original conveyor storage with perforated surrounding panels above a mecanum chassis and inclined suspension springs.">
+        <figcaption><b>Before: conveyor storage (~5.7 kg).</b> Panels contain the cubes as the conveyor moves them inward.</figcaption>
+      </figure>
+      <figure class="paper">
+        <img src="assets/robomaster/storage_suction.png" width="1400" height="1050" loading="lazy"
+             alt="CAD view of the redesigned robot with two suction cups at the top, a mecanum chassis, and inclined suspension springs.">
+        <figcaption><b>After: two suction cups (~1.3 kg).</b> One cup per cube; 4.4 kg less storage hardware.</figcaption>
+      </figure>
+    </div>
+
+    <div class="split" style="margin-top:1.8rem">
+      <div class="narrow">
+        <p>
+          I ran the analysis for <b>80 mm cups at &minus;85 kPa</b>, checking acceleration and off-center
+          pickup. At 300 RPM on 158 mm wheels, the speed works out to about 2.48 m/s. Reaching it
+          from rest in roughly two seconds gives <b>about 1.24 m/s&sup2; average acceleration</b>.
+          The analysis supported retention under the acceleration and offset load cases, and
+          the cups held in real-robot testing.
+        </p>
+      </div>
+      <div class="narrow">
+        <p>
+          An 80 mm circle at an 85 kPa pressure difference gives about <b>427 N of theoretical
+          axial force per cup</b>. The useful comparison includes effective seal area, friction
+          against sliding, and the moment that can lift an edge. An off-center pull adds a lever
+          arm, and the cube&rsquo;s thickness gives tangential loads a lever arm too.
+          Today's recalculation uses an <b>assumed traction upper bound of 7.85 m/s&sup2;</b>
+          as a worst case. The model gives a minimum safety factor of <b>4.77 at the average acceleration
+          and 3.20 at the traction bound</b>, governed by off-center side pickup. The top-pickup
+          case shown below gives <b>3.28 at the same bound</b>.
+        </p>
+      </div>
+    </div>
+
+    <figure>
+      <div style="overflow-x:auto" tabindex="0" role="region" aria-label="Suction force diagram; scroll horizontally to explore">
+        <img src="assets/robomaster/suction_force_diagram.svg" width="960" height="720" loading="lazy"
+             style="width:100%;min-width:960px"
+             alt="Side-view model of one 80 mm cup on a 200 mm, 700 g cube: upward suction, downward gravity, horizontal inertia and contact friction, offset e, height h, and a seal-edge pivot. Top-pickup safety factor is 3.28 at 7.85 m/s²; the governing side-pickup case gives 3.20.">
+      </div>
+      <figcaption>
+        <b>Edge-pivot retention model.</b> Offset and cube thickness both increase the load moment.
+        <a href="assets/robomaster/suction_force_diagram.svg">Open full-size diagram</a>.
+      </figcaption>
+    </figure>
+
+    <p class="scope" style="margin-top:1.8rem">
+      <b>The replacement package was 4.4 kg lighter &mdash; about 77% of the original
+      storage assembly&rsquo;s mass removed.</b> That reduced the mass concentrated on the
+      storage side. In real-robot testing and use, the suction system never dropped a cube;
+      after the change, the suspension absorbed bumps normally again, including when driving
+      over loose projectiles on the field. The disagreement gave the iteration a concrete question to answer:
+      how much holding capacity did the lighter mechanism need?
+    </p>
+  </div>
+</section>
+
+<hr class="inflation">
+
 <section>
   <div class="wrap">
       <h2>What I actually did</h2>
